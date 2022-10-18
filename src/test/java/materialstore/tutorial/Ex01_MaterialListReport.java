@@ -46,18 +46,18 @@ public class Ex01_MaterialListReport {
         // create 3 materials in the store
         Path screenshotDir = Helper.getCWD().resolve("src/test/resources/screenshot");
         writePngIntoStore(store, jobName, jobTimestamp,
-                screenshotDir.resolve("DuckDuckGo-blank.png"), "01");
+                screenshotDir.resolve("DuckDuckGo-blank.png"), "01", "blank search page");
         writePngIntoStore(store, jobName, jobTimestamp,
-                screenshotDir.resolve("DuckDuckGo-query.png"), "02");
+                screenshotDir.resolve("DuckDuckGo-query.png"), "02", "search page with query");
         writePngIntoStore(store, jobName, jobTimestamp,
-                screenshotDir.resolve("DuckDuckGo-result.png"), "03");
+                screenshotDir.resolve("DuckDuckGo-result.png"), "03", "result page");
         MaterialList materialList = store.select(jobName, jobTimestamp);
         assertEquals(3, materialList.size());
 
         // compile a report
         Inspector inspector = Inspector.newInstance(store);
         String fileName = jobName.toString() + "-list.html";
-        SortKeys sortKeys = new SortKeys("step");
+        SortKeys sortKeys = new SortKeys("step", "label", "URL.path");
         inspector.setSortKeys(sortKeys);
         Path report = inspector.report(materialList, fileName);
         assertTrue(Files.exists(report));
@@ -68,10 +68,12 @@ public class Ex01_MaterialListReport {
                                    JobName jobName,
                                    JobTimestamp jobTimestamp,
                                    Path pngFile,
-                                   String step) throws MalformedURLException, MaterialstoreException {
+                                   String step, String label) throws MalformedURLException, MaterialstoreException {
         URL url = pngFile.toFile().toURI().toURL();
         Metadata metadata = new Metadata.Builder(url)
-                .put("step", step).build();
+                .put("step", step)
+                .put("label", label)
+                .exclude("URL.host").build();
         store.write(jobName, jobTimestamp, FileType.PNG, metadata, pngFile);
     }
 }
