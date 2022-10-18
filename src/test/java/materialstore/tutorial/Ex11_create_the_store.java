@@ -15,7 +15,7 @@ import com.kazurayam.materialstore.filesystem.Stores;
  * This code shows how to create a "store" directory
  * for each individual JUnit test case.
  */
-public class Test010101_create_the_store {
+public class Ex11_create_the_store {
     private static Path testOutputDir;
     private Store store;
 

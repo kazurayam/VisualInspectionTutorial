@@ -20,23 +20,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * This code shows how to write a text file into the store.
  */
-public class Test010201_write_materials_of_various_FileTypes extends Base {
+public class Ex22_write_materials_of_various_FileTypes {
 
     private Store store;
-    private static JobName jobName;
+    private JobName jobName;
     private JobTimestamp jobTimestamp;
 
     @BeforeAll
-    public static void beforeAll() throws IOException { initializeTestOutput(); }
+    public static void beforeAll() throws IOException { Helper.initializeOutputDir(); }
 
     @BeforeEach
     public void setup() throws IOException {
-        store = initializeStore(this);
+        store = Helper.initializeStore(this);
     }
 
     @Test
     public void writeTXT() throws MaterialstoreException {
-        jobName = new JobName("writeTXT");
+        jobName = new JobName(Helper.classNameToJobName(this));
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
         String text = "Hello, world!";
@@ -49,7 +49,7 @@ public class Test010201_write_materials_of_various_FileTypes extends Base {
         jobName = new JobName("writePNG");
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
-        Path png = getCurrentDir().resolve("src/test/resources/images/apple.png");
+        Path png = Helper.getCWD().resolve("src/test/resources/images/apple.png");
         Material material = store.write(jobName, jobTimestamp, FileType.PNG, metadata, png);
         assertTrue(Files.exists(material.toPath(store)));
     }
@@ -59,7 +59,7 @@ public class Test010201_write_materials_of_various_FileTypes extends Base {
         jobName = new JobName("writeCSV");
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
-        Path csv = getCurrentDir().resolve("src/test/resources/tabular/cart.csv");
+        Path csv = Helper.getCWD().resolve("src/test/resources/tabular/cart.csv");
         Material material = store.write(jobName, jobTimestamp, FileType.CSV, metadata, csv);
         assertTrue(Files.exists(material.toPath(store)));
     }
@@ -69,7 +69,7 @@ public class Test010201_write_materials_of_various_FileTypes extends Base {
         jobName = new JobName("writeXLSX");
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
-        Path xlsx = getCurrentDir().resolve("src/test/resources/tabular/cart.xlsx");
+        Path xlsx = Helper.getCWD().resolve("src/test/resources/tabular/cart.xlsx");
         Material material = store.write(jobName, jobTimestamp, FileType.XLSX, metadata, xlsx);
         assertTrue(Files.exists(material.toPath(store)));
     }
@@ -79,7 +79,7 @@ public class Test010201_write_materials_of_various_FileTypes extends Base {
         jobName = new JobName("writePDF");
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
-        Path pdf = getCurrentDir().resolve("src/test/resources/tabular/cart.pdf");
+        Path pdf = Helper.getCWD().resolve("src/test/resources/tabular/cart.pdf");
         Material material = store.write(jobName, jobTimestamp, FileType.PDF, metadata, pdf);
         assertTrue(Files.exists(material.toPath(store)));
     }

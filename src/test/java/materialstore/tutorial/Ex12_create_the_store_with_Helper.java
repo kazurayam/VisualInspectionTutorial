@@ -12,16 +12,16 @@ import java.io.IOException;
  * for each individual JUnit test case, by calling
  * the methods implemented in the Base class.
  */
-public class Test010102_create_the_store_by_Base extends Base {
+public class Ex12_create_the_store_with_Helper {
 
     private Store store;
 
     @BeforeAll
-    public static void beforeAll() throws IOException { initializeTestOutput(); }
+    public static void beforeAll() throws IOException { Helper.initializeOutputDir(); }
 
     @BeforeEach
     public void setup() throws IOException {
-        store = initializeStore(this);
+        store = Helper.initializeStore(this);
     }
 
     @Test
