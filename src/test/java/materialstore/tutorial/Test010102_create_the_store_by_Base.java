@@ -10,9 +10,9 @@ import java.io.IOException;
 /**
  * This code shows hot to create a "store" directory
  * for each individual JUnit test case, by calling
- * the method implemented in the Base class.
+ * the methods implemented in the Base class.
  */
-public class Test010102_create_the_store_by_common_method extends Base {
+public class Test010102_create_the_store_by_Base extends Base {
 
     private Store store;
 
@@ -21,12 +21,12 @@ public class Test010102_create_the_store_by_common_method extends Base {
 
     @BeforeEach
     public void setup() throws IOException {
-        store = initializeRoot(this.getClass().getSimpleName());
+        store = initializeStore(this);
     }
 
     @Test
-    public void show() {
-        System.out.println("the store was created at " + store.getRoot().toString());
+    public void showStorePath() {
+        System.out.println(store.getRoot().toString());
     }
 
 }

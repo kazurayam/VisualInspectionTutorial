@@ -40,7 +40,7 @@ public class Test010101_create_the_store {
     }
 
     @Test
-    public void show() {
-        System.out.println("the store was created at " + store.getRoot().toString());
+    public void showStorePath() {
+        System.out.println(store.getRoot().toString());
     }
 }

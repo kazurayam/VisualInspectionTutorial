@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="materialstore.tutorial.Test010102_create_the_store_by_common_method" tests="1" skipped="0" failures="0" errors="0" timestamp="2022-10-18T00:45:03" hostname="KAZUAKInoMacBook-Air-2.local" time="0.041">
-  <properties/>
-  <testcase name="show()" classname="materialstore.tutorial.Test010102_create_the_store_by_common_method" time="0.041"/>
-  <system-out><![CDATA[the store was created at /Users/kazuakiurayama/github/materialstore-tutorial/build/tmp/testOutput/Test010102_create_the_store_by_common_method/store
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
