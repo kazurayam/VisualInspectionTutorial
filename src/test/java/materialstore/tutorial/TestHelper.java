@@ -1,14 +1,16 @@
 package materialstore.tutorial;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 
 import com.kazurayam.materialstore.filesystem.Store;
 import com.kazurayam.materialstore.filesystem.Stores;
 
-public abstract class Helper {
+public abstract class TestHelper {
 
     private static Path currentWorkingDir;
     private static Path testOutputDir;
@@ -34,9 +36,15 @@ public abstract class Helper {
 
     static Store initializeStore(Object testCase) throws IOException {
         Path root = testOutputDir.resolve(testCase.getClass().getSimpleName()).resolve("store");
-        if (!Files.exists(root)) {
-            Files.createDirectories(root);
+        if (Files.exists(root)) {
+            // delete the store directory recursively
+            Files.walk(root)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
         }
+        // recreate the store directory
+        Files.createDirectories(root);
         return Stores.newInstance(root);
     }
 

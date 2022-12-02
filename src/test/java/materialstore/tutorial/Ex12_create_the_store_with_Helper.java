@@ -17,11 +17,11 @@ public class Ex12_create_the_store_with_Helper {
     private Store store;
 
     @BeforeAll
-    public static void beforeAll() throws IOException { Helper.initializeOutputDir(); }
+    public static void beforeAll() throws IOException { TestHelper.initializeOutputDir(); }
 
     @BeforeEach
     public void setup() throws IOException {
-        store = Helper.initializeStore(this);
+        store = TestHelper.initializeStore(this);
     }
 
     @Test

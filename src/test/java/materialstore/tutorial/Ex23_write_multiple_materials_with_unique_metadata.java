@@ -26,12 +26,12 @@ public class Ex23_write_multiple_materials_with_unique_metadata {
     private JobTimestamp jobTimestamp;
 
     @BeforeAll
-    public static void beforeAll() throws IOException { Helper.initializeOutputDir(); }
+    public static void beforeAll() throws IOException { TestHelper.initializeOutputDir(); }
 
     @BeforeEach
     public void setup() throws IOException, MaterialstoreException {
-        store = Helper.initializeStore(this);
-        jobName = new JobName(Helper.classNameToJobName(this));
+        store = TestHelper.initializeStore(this);
+        jobName = new JobName(TestHelper.classNameToJobName(this));
         jobTimestamp = JobTimestamp.now();
     }
 

@@ -26,25 +26,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Ex01_MaterialListReport {
 
-
     private Store store;
     private JobName jobName;
     private JobTimestamp jobTimestamp;
 
     @BeforeAll
-    public static void beforeAll() throws IOException { Helper.initializeOutputDir(); }
+    public static void beforeAll() throws IOException {
+        TestHelper.initializeOutputDir();
+    }
 
     @BeforeEach
     public void setup() throws IOException, MaterialstoreException {
-        store = Helper.initializeStore(this);
-        jobName = new JobName(Helper.classNameToJobName(this));
+        store = TestHelper.initializeStore(this);
+        jobName = new JobName(TestHelper.classNameToJobName(this));
         jobTimestamp = JobTimestamp.now();
     }
 
     @Test
     public void testCompileReport() throws MalformedURLException, MaterialstoreException {
         // create 3 materials in the store
-        Path screenshotDir = Helper.getCWD().resolve("src/test/resources/screenshot");
+        Path screenshotDir = TestHelper.getCWD().resolve("src/test/resources/screenshot");
         writePngIntoStore(store, jobName, jobTimestamp,
                 screenshotDir.resolve("DuckDuckGo-blank.png"), "01", "blank search page");
         writePngIntoStore(store, jobName, jobTimestamp,
@@ -56,7 +57,7 @@ public class Ex01_MaterialListReport {
 
         // compile a report
         Inspector inspector = Inspector.newInstance(store);
-        String fileName = jobName.toString() + "-list.html";
+        String fileName = jobName.toString() + "-" + jobTimestamp.toString() + ".html";
         SortKeys sortKeys = new SortKeys("step", "label", "URL.path");
         inspector.setSortKeys(sortKeys);
         Path report = inspector.report(materialList, fileName);

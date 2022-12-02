@@ -27,16 +27,16 @@ public class Ex22_write_materials_of_various_FileTypes {
     private JobTimestamp jobTimestamp;
 
     @BeforeAll
-    public static void beforeAll() throws IOException { Helper.initializeOutputDir(); }
+    public static void beforeAll() throws IOException { TestHelper.initializeOutputDir(); }
 
     @BeforeEach
     public void setup() throws IOException {
-        store = Helper.initializeStore(this);
+        store = TestHelper.initializeStore(this);
     }
 
     @Test
     public void writeTXT() throws MaterialstoreException {
-        jobName = new JobName(Helper.classNameToJobName(this));
+        jobName = new JobName(TestHelper.classNameToJobName(this));
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
         String text = "Hello, world!";
@@ -49,7 +49,7 @@ public class Ex22_write_materials_of_various_FileTypes {
         jobName = new JobName("writePNG");
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
-        Path png = Helper.getCWD().resolve("src/test/resources/images/apple.png");
+        Path png = TestHelper.getCWD().resolve("src/test/resources/images/apple.png");
         Material material = store.write(jobName, jobTimestamp, FileType.PNG, metadata, png);
         assertTrue(Files.exists(material.toPath(store)));
     }
@@ -59,7 +59,7 @@ public class Ex22_write_materials_of_various_FileTypes {
         jobName = new JobName("writeCSV");
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
-        Path csv = Helper.getCWD().resolve("src/test/resources/tabular/cart.csv");
+        Path csv = TestHelper.getCWD().resolve("src/test/resources/tabular/cart.csv");
         Material material = store.write(jobName, jobTimestamp, FileType.CSV, metadata, csv);
         assertTrue(Files.exists(material.toPath(store)));
     }
@@ -69,7 +69,7 @@ public class Ex22_write_materials_of_various_FileTypes {
         jobName = new JobName("writeXLSX");
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
-        Path xlsx = Helper.getCWD().resolve("src/test/resources/tabular/cart.xlsx");
+        Path xlsx = TestHelper.getCWD().resolve("src/test/resources/tabular/cart.xlsx");
         Material material = store.write(jobName, jobTimestamp, FileType.XLSX, metadata, xlsx);
         assertTrue(Files.exists(material.toPath(store)));
     }
@@ -79,7 +79,7 @@ public class Ex22_write_materials_of_various_FileTypes {
         jobName = new JobName("writePDF");
         jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.NULL_OBJECT;
-        Path pdf = Helper.getCWD().resolve("src/test/resources/tabular/cart.pdf");
+        Path pdf = TestHelper.getCWD().resolve("src/test/resources/tabular/cart.pdf");
         Material material = store.write(jobName, jobTimestamp, FileType.PDF, metadata, pdf);
         assertTrue(Files.exists(material.toPath(store)));
     }
