@@ -75,7 +75,36 @@ You will also find a file `sampleProject/build.gradle` file, but it will be empt
 
 **build.gradle**
 
-    Unresolved directive in adocs/tut1.adoc - include::../build.gradle[lines=1..30]
+    plugins {
+        id 'java'
+    }
+
+    group 'com.kazurayam'
+    version '0.2.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+
+        testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.12.5'
+        testImplementation group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
+        testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+        testImplementation group: 'com.google.code.gson', name: 'gson', version : '2.8.2'
+        testImplementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+        testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    task compileTutorial {
+        doFirst {
 
 Please note that you declared the dependency to the `materialstore` library, which is published at the Maven Central repository.
 
@@ -109,7 +138,79 @@ I have created a JUnit-based Java code that uses the materialstore library: `sam
 
 **T01HelloMaterialstoreTest.java**
 
-    Unresolved directive in adocs/tut1.adoc - include::../src/test/java/my/sample/T01HelloMaterialstoreTest.java[]
+    package my.sample;
+
+    import com.kazurayam.materialstore.core.filesystem.FileType;
+    import com.kazurayam.materialstore.core.filesystem.JobName;
+    import com.kazurayam.materialstore.core.filesystem.JobTimestamp;
+    import com.kazurayam.materialstore.core.filesystem.Material;
+    import com.kazurayam.materialstore.core.filesystem.MaterialstoreException;
+    import com.kazurayam.materialstore.core.filesystem.Metadata;
+    import com.kazurayam.materialstore.core.filesystem.Store;
+    import com.kazurayam.materialstore.core.filesystem.Stores;
+    import org.junit.jupiter.api.BeforeEach;
+    import org.junit.jupiter.api.Test;
+
+    import java.io.IOException;
+    import java.nio.file.Files;
+    import java.nio.file.Path;
+    import java.nio.file.Paths;
+
+    import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+    /*
+     * This code demonstrate how to save a text string into an instance of
+     * "materialstore" backed with a directory on the local OS file system.
+     */
+    public class T01HelloMaterialstoreTest {
+
+        // central abstraction of Material storage
+        private Store store;
+
+        @BeforeEach
+        public void beforeEach() {
+            // create a base directory
+            Path dir = createTestClassOutputDir(this);   // (1)
+            // create a directory named "store"
+            Path storeDir = dir.resolve("store");   // (2)
+            // instantiate a Store object
+            store = Stores.newInstance(storeDir);        // (3)
+        }
+
+        @Test
+        public void test01_hello_materialstore() throws MaterialstoreException {
+            JobName jobName =
+                    new JobName("test01_hello_materialstore");       // (4)
+            JobTimestamp jobTimestamp = JobTimestamp.now();          // (5)
+            String text = "Hello, materialstore!";
+            Material material = store.write(jobName, jobTimestamp,   // (6)
+                    FileType.TXT,                            // (7)
+                    Metadata.NULL_OBJECT,                    // (8)
+                    text);                                   // (9)
+            System.out.println(String.format("wrote a text '%s'", text));
+            assertNotNull(material);
+        }
+
+        //-----------------------------------------------------------------
+
+        Path createTestClassOutputDir(Object testClass) {
+            Path output = getTestOutputDir()
+                    .resolve(testClass.getClass().getName());
+            try {
+                if (!Files.exists(output)) {
+                    Files.createDirectories(output);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return output;
+        }
+
+        Path getTestOutputDir() {
+            return Paths.get(System.getProperty("user.dir"))
+                    .resolve("build/tmp/testOutput");
+        }
+    }
 
 You can run this by running the `test` task of Gradle:
 
@@ -146,13 +247,13 @@ The `test` task of Gradle will create a report in HTML format where you can find
 
 You want to open the `index.html` in your Web browser to have a look at the test result.
 
-![01 test report](images/tutorial/01_test_report.png)
+![01 test report](../images/tutorial/01_test_report.png)
 
 ### File tree created by "Hello, materialstore"
 
 The 1st test will create a new file tree as output:
 
-![02 test output file tree](images/tutorial/02_test_output_file_tree.png)
+![02 test output file tree](../images/tutorial/02_test_output_file_tree.png)
 
 Let us read the Java source of the test `T1HelloMaterialstoreTest` line by line to understand the basic concept and classes of the "materialstore" library. Here I assume that you are a well-trained Java programmer who requires no explanation how to code using JUnit.
 
@@ -310,7 +411,46 @@ These types will cover the most cases in your automated UI testing.
 
 I will show you next sample code `test02_write_image_with_metadata` of `T2MetadataTest` class.
 
-    Unresolved directive in adocs/tut2.adoc - include::../src/test/java/my/sample/T02WriteImageWithMetadataTest.java[lines=21..60]
+    public class T02WriteImageWithMetadataTest {
+
+        private Store store;
+
+        @BeforeEach
+        public void beforeEach() throws IOException {
+            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
+            store = Stores.newInstance(testClassOutputDir.resolve("store"));
+        }
+
+        @Test
+        public void test02_write_image_with_metadata() throws MaterialstoreException {
+            JobName jobName = new JobName("test02_write_image_with_metadata");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            URL url = SharedMethods.createURL(                     // (10)
+                    "https://kazurayam.github.io/materialstore/images/tutorial/03_apple.png");
+            byte[] bytes = SharedMethods.downloadUrl(url);         // (11)
+            Material material =
+                    store.write(jobName, jobTimestamp,             // (12)
+                            FileType.PNG,
+                            Metadata.builder(url)                  // (13)
+                                    .put("step", "01")
+                                    .put("label", "red apple")
+                                    .build(),
+                            bytes);
+
+            assertNotNull(material);
+            System.out.println(material.getID() + " "
+                    + material.getDescription());                   // (14)
+
+            assertEquals(FileType.PNG, material.getFileType());
+            assertEquals("https",
+                    material.getMetadata().get("URL.protocol"));
+            assertEquals("kazurayam.github.io",
+                    material.getMetadata().get("URL.host"));        // (15)
+            assertEquals("/materialstore/images/tutorial/03_apple.png",
+                    material.getMetadata().get("URL.path"));
+            assertEquals("01", material.getMetadata().get("step"));
+        }
+    }
 
 At the line (10), we create an instance of `java.net.URL` with a String argument "<https://kazurayam.github.io/materialstore/images/tutorial/03_apple.png>". You can click this URL to see the image yourself. You should see an apple.
 
@@ -318,18 +458,36 @@ I create a helper class named `my.sample.SharedMethod` with a method `createURL(
 
 **createURL(String)**
 
-    Unresolved directive in adocs/tut2.adoc - include::../src/test/java/my/sample/SharedMethods.java[lines=18..24]
+        public static final URL createURL(String urlString) throws MaterialstoreException {
+            try {
+                return new URL(urlString);
+            } catch (MalformedURLException e) {
+                throw new MaterialstoreException(e);
+            }
 
 At the statement (11) we get access to the URL. We will effectively download a PNG image file from the URL and obtain a large byte array.
 The `downloadURL(URL)` method of `SharedMethods` class implements this processing: converting a URL to an array of bytes.
 
 **downloadUrl(URL)**
 
-    Unresolved directive in adocs/tut2.adoc - include::../src/test/java/my/sample/SharedMethods.java[lines=26..40]
+        public static final byte[] downloadUrl(URL toDownload) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try {
+                byte[] chunk = new byte[4096];
+                int bytesRead;
+                InputStream stream = toDownload.openStream();
+                while ((bytesRead = stream.read(chunk)) > 0) {
+                    outputStream.write(chunk, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return outputStream.toByteArray();
 
 The statement (12) invokes `store.write()` method, which create a new file tree, as this:
 
-![07 writing image with metadata](images/tutorial/07_writing_image_with_metadata.png)
+![07 writing image with metadata](../images/tutorial/07_writing_image_with_metadata.png)
 
 ### Metadata based on URL & manually created Metadata
 
@@ -388,13 +546,63 @@ Please check the [Javadoc of Material](https://kazurayam.github.io/materialstore
 
 Web will make a test case which downloads 3 image files from public URL and store them into the store.
 
-    Unresolved directive in adocs/tut3.adoc - include::../src/test/java/my/sample/T03WriteMultipleImagesTest.java[lines=18..40]
+    public class T03WriteMultipleImagesTest {
+        private Store store;
+        @BeforeEach
+        public void beforeEach() throws IOException {
+            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
+            store = Stores.newInstance(testClassOutputDir.resolve("store"));
+        }
+
+        @Test
+        public void test03_write_multiple_images()
+                throws MaterialstoreException {
+            JobName jobName = new JobName("test03_write_multiple_images");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);  // (16)
+            MaterialList allMaterialList =
+                    store.select(jobName, jobTimestamp,
+                            QueryOnMetadata.ANY);                      // (17)
+            assertEquals(3, allMaterialList.size());
+        }
+    }
 
 This code calls `SharedMethods.write3images(Store, JobName, JobTimestap)` method. It is implemented as this:
 
 **SharedMethod.write3images**
 
-    Unresolved directive in adocs/tut3.adoc - include::../src/test/java/my/sample/SharedMethods.java[lines=43..74]
+        public static final void write3images(Store store, JobName jn, JobTimestamp jt)          // (16)
+                throws MaterialstoreException {
+            String prefix =
+                    "https://kazurayam.github.io/materialstore/images/tutorial/";
+            // Apple
+            URL url1 = SharedMethods.createURL(prefix + "03_apple.png");
+            store.write(jn, jt, FileType.PNG,
+                    Metadata.builder(url1)
+                            .putAll(ImmutableMap.of(
+                                    "step", "01",
+                                    "label", "red apple"))
+                            .build(),
+                    SharedMethods.downloadUrl(url1));
+            // Mikan
+            URL url2 = SharedMethods.createURL(prefix + "04_mikan.png");
+            store.write(jn, jt, FileType.PNG,
+                    Metadata.builder(url2)
+                            .putAll(ImmutableMap.of(
+                                    "step", "02",
+                                    "label", "mikan"))
+                            .build(),
+                    SharedMethods.downloadUrl(url2));
+            // Money
+            URL url3 = SharedMethods.createURL(prefix + "05_money.png");
+            store.write(jn, jt, FileType.PNG,
+                    Metadata.builder(url3)
+                            .putAll(ImmutableMap.of(
+                                    "step", "03",
+                                    "label", "money"))
+                            .build(),
+                    SharedMethods.downloadUrl(url3));;
+        }
 
 This code makes HTTP requests to
 
@@ -406,7 +614,7 @@ This code makes HTTP requests to
 
 and save the image files into a directory inside the store. When you run this test case, you will get a new file tree as follows.
 
-![08 writing multiple images](./images/tutorial/08_writing_multiple_images.png)
+![08 writing multiple images](../images/tutorial/08_writing_multiple_images.png)
 
 The `index` file will contain 3 lines, one for each PNG image file.
 
@@ -418,12 +626,105 @@ The `index` file will contain 3 lines, one for each PNG image file.
 
 ## 4th example : retrieving a saved material
 
-    Unresolved directive in adocs/tut4.adoc - include::../src/test/java/my/sample/T04SelectASingleMaterialWithQueryTest.java[lines=18..40]
+    public class T04SelectASingleMaterialWithQueryTest {
+        private Store store;
+        @BeforeEach
+        public void beforeEach() throws IOException {
+            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
+            store = Stores.newInstance(testClassOutputDir.resolve("store"));
+        }
+
+        @Test
+        public void test04_select_a_single_material_with_query()
+                throws MaterialstoreException {
+            JobName jobName =
+                    new JobName("test04_select_a_single_material_with_query");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);
+            //
+            Material material = store.selectSingle(jobName, jobTimestamp,
+                    QueryOnMetadata.builder().put("step", "02").build()); // (20)
+            assertNotNull(material);
+            //
+            System.out.printf("%s %s\n",
+                    material.getFileType().getExtension(),
+                    material.getMetadata().getMetadataIdentification());
 
 ## 5th example : Selecting a MaterialList
 
-    Unresolved directive in adocs/tut5.adoc - include::../src/test/java/my/sample/T05SelectMaterialListTest.java[]
+    package my.sample;
+
+    import com.kazurayam.materialstore.core.filesystem.JobName;
+    import com.kazurayam.materialstore.core.filesystem.JobTimestamp;
+    import com.kazurayam.materialstore.core.filesystem.Material;
+    import com.kazurayam.materialstore.core.filesystem.MaterialList;
+    import com.kazurayam.materialstore.core.filesystem.MaterialstoreException;
+    import com.kazurayam.materialstore.core.filesystem.QueryOnMetadata;
+    import com.kazurayam.materialstore.core.filesystem.Store;
+    import com.kazurayam.materialstore.core.filesystem.Stores;
+    import org.junit.jupiter.api.BeforeEach;
+    import org.junit.jupiter.api.Test;
+
+    import java.io.IOException;
+    import java.nio.file.Path;
+
+    public class T05SelectMaterialListTest {
+        private Store store;
+        @BeforeEach
+        public void beforeEach() throws IOException {
+            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
+            store = Stores.newInstance(testClassOutputDir.resolve("store"));
+        }
+
+        @Test
+        public void test05_select_list_of_material()
+                throws MaterialstoreException {
+            JobName jobName =
+                    new JobName("test04_select_lest_of_materials");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);
+            //
+            MaterialList materialList =
+                    store.select(jobName, jobTimestamp,
+                            QueryOnMetadata.ANY);              // (18)
+            //
+            for (Material material : materialList) {           // (19)
+                System.out.printf("%s %s\n",
+                        material.getFileType().getExtension(),
+                        material.getMetadata().getMetadataIdentification());
+                System.out.printf("%s '%s' %s\n\n",
+                        material.getMetadata().get("step"),
+                        material.getMetadata().get("label"),
+                        material.getMetadata().toURLAsString());
+            }
+        }
+    }
 
 ## 6th example : generate a HTML report of a MaterialList
 
-    Unresolved directive in adocs/tut6.adoc - include::../src/test/java/my/sample/T06MaterialListReportTest.java[lines=20..60]
+    public class T06MaterialListReportTest {
+        private Store store;
+        @BeforeEach
+        public void beforeEach() throws IOException {
+            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
+            store = Stores.newInstance(testClassOutputDir.resolve("store"));
+        }
+
+        @Test
+        public void test06_makeMaterialListReport() throws MaterialstoreException {
+            JobName jobName =
+                    new JobName("test06_makeMaterialListReport");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);
+
+            MaterialList materialList =
+                    store.select(jobName, jobTimestamp,
+                            QueryOnMetadata.ANY);              // (18)
+
+            Inspector inspector = Inspector.newInstance(store);
+            inspector.setSortKeys(new SortKeys("step"));
+            Path report = inspector.report(materialList);
+            assertNotNull(report);
+            System.out.println("report is found at " + report);
+        }
+    }
