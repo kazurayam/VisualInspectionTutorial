@@ -22,19 +22,19 @@
     -   <a href="#5th-example-selecting-a-materiallist" id="toc-5th-example-selecting-a-materiallist">5th example : Selecting a MaterialList</a>
     -   <a href="#6th-example-generate-a-html-report-of-a-materiallist" id="toc-6th-example-generate-a-html-report-of-a-materiallist">6th example : generate a HTML report of a MaterialList</a>
 
+# Materialstore Tutorial
+
 -   [API javadoc](https://kazurayam.github.io/materialstore/api/index.html)
 
 -   back to the [repository](https://github.com/kazurayam/materialstore)
 
-# Materialstore Tutorial
-
-Let us begin with a quick introduction to a Java library named "materialstore".
+This is a quick introduction to a Java library named `materialstore` that I (kazurayam) developed.
 
 ## Setting up a project
 
 Here I assume you have a seasoned programming skill in Java, and you have installed the build tool [Gradle](https://gradle.org/install/). Now let us create a project where you write some Java code for practice.
 
-Let us create a working directory; say `~/tmp/sampleProject`.
+I created a working directory under my home directory: `~/tmp/sampleProject`.
 
     $ cd ~/tmp/
     $ mkdir sampleProject
@@ -80,7 +80,7 @@ You will also find a file `sampleProject/build.gradle` file, but it will be empt
     }
 
     group 'com.kazurayam'
-    version '0.2.0-SNAPSHOT'
+    version '0.3.0-SNAPSHOT'
 
     repositories {
         mavenCentral()
@@ -88,15 +88,15 @@ You will also find a file `sampleProject/build.gradle` file, but it will be empt
     }
 
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+        testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.5'
 
-        testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.12.5'
         testImplementation group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
         testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-        testImplementation group: 'com.google.code.gson', name: 'gson', version : '2.8.2'
+        testImplementation group: 'com.google.code.gson', name: 'gson', version : '2.8.9'
         testImplementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
         testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
     }
 
     test {

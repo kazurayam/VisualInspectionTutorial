@@ -1,10 +1,10 @@
-Let us begin with a quick introduction to a Java library named "materialstore".
+This is a quick introduction to a Java library named `materialstore` that I (kazurayam) developed.
 
 == Setting up a project
 
 Here I assume you have a seasoned programming skill in Java, and you have installed the build tool link:https://gradle.org/install/[Gradle]. Now let us create a project where you write some Java code for practice.
 
-Let us create a working directory; say `~/tmp/sampleProject`.
+I created a working directory under my home directory: `~/tmp/sampleProject`.
 
 [source, shell]
 ----
@@ -57,7 +57,7 @@ You will also find a file `sampleProject/build.gradle` file, but it will be empt
 include::../../build.gradle[lines=1..30]
 ----
 
-Please note that you declared the dependency to the `materialstore` library, which is published at the Maven Central repository.
+Please note that in the build.gradle we declared the dependency to the `materialstore` library, which is published at the Maven Central repository.
 
 * https://mvnrepository.com/artifact/com.kazurayam/materialstore
 
@@ -68,17 +68,22 @@ You can check if the project is properly setup by executing a command, as follow
 $ cd ~/tmp/sampleProject/
 $ gradle dependencies --configuration testImplementation
 
+> Task :dependencies
+
 ------------------------------------------------------------
-Root project 'sampleProject'
+Root project 'materialstore-tutorial'
 ------------------------------------------------------------
 
 testImplementation - Implementation only dependencies for source set 'test'. (n)
-+--- com.kazurayam:materialstore:0.12.5 (n)
++--- com.kazurayam:materialstore:0.16.5 (n)
++--- org.freemarker:freemarker:2.3.31 (n)
++--- com.google.guava:guava:31.1-jre (n)
++--- com.google.code.gson:gson:2.8.9 (n)
 +--- org.slf4j:slf4j-api:1.7.25 (n)
 +--- org.slf4j:slf4j-simple:1.7.25 (n)
-\--- org.junit.jupiter:junit-jupiter-api:5.9.0 (n)
+\--- org.junit.jupiter:junit-jupiter-api:5.9.2 (n)
 
-(n) - Not resolved (configuration is not meant to be resolved)
+(n) - A dependency or dependency configuration that cannot be resolved.
 
 A web-based, searchable dependency report is available by adding the --scan option.
 
@@ -100,7 +105,7 @@ You can run this by running the `test` task of Gradle:
 
 [source]
 ----
-$ gradle test
+$ gradle test --tests  my.sample.T1HelloMaterialstore -i
 > Task :compileJava NO-SOURCE
 > Task :processResources NO-SOURCE
 > Task :classes UP-TO-DATE

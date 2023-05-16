@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.kazurayam'
-version '0.2.0-SNAPSHOT'
+version '0.3.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -11,15 +11,12 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-
-    testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.12.5'
-    testImplementation group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
-    testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-    testImplementation group: 'com.google.code.gson', name: 'gson', version : '2.8.2'
+    testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.6-SNAPSHOT'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
     testImplementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }
 
 test {
@@ -27,12 +24,6 @@ test {
 }
 
 task compileTutorial {
-    doFirst {
-        copy {
-            from("tutorial/docs/images")
-            into("docs/images")
-        }
-    }
     // run docs/indexconv.sh to generate index.md from index_.adoc
     doLast {
         exec {
