@@ -21,7 +21,6 @@
         -   [Metadata.Builder.putAll(Map&lt;String,String&gt;)](#metadata-builder-putallmapstringstring)
         -   [Metadata.Builder.exclude(String keys…​)](#metadata-builder-excludestring-keys)
         -   [Sorting the "index" file](#sorting-the-index-file)
-    -   [5th example : Selecting a MaterialList](#5th-example-selecting-a-materiallist)
         -   [Sorting the entries by SortKeys](#sorting-the-entries-by-sortkeys)
 
 # Materialstore Tutorial
@@ -30,7 +29,7 @@
 
 -   back to the [repository](https://github.com/kazurayam/materialstore)
 
-This is a quick introduction to a Java library named `materialstore` that I (kazurayam) developed.
+This is an introduction to a Java library named `materialstore` that I (kazurayam) developed.
 
 ## Setting up a project
 
@@ -141,7 +140,11 @@ You can check if the project is properly setup by executing a command, as follow
 
 ## 1st example : "Hello, materialstore!"
 
-I have created a JUnit-based Java code that uses the materialstore library: `sampleProject/src/test/java/my/sample/T1HelloMaterialstoreTest.java`, as follows:
+We are going to read the code of
+
+-   [my.sample.T01HelloMaterialstoreTest](https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T01HelloMaterialstoreTest.java)
+
+This is a JUnit-based Java code that uses the materialstore library.
 
 **T01HelloMaterialstoreTest.java**
 
@@ -419,7 +422,11 @@ These types will cover the most cases in your automated UI testing.
 
 ## 2nd example: write a Material with associated Metadata
 
-I will show you next sample code `test02_write_image_with_metadata` of `T2MetadataTest` class.
+We are going to read the code of
+
+-   [my.sample.T03WriteImageWithMetadataTest](https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T02WriteImageWithMetadata.java)
+
+<!-- -->
 
     public class T02WriteImageWithMetadataTest {
 
@@ -561,7 +568,11 @@ You can also get various information out of the `material` variable. For example
 Please check the [Javadoc of Material](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Material.html) for what sort of accessor methods are implemented.
 == 3rd example: writing multiple Materials
 
-The `T03WriteMultipleImagesTest` class downloads 3 PNG image files from a public URL and store them into the store.
+We are going to read the code of
+
+-   [my.sample.T03WriteMultipleImagesTest](https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T03WriteMultipleImagesTest.java)
+
+This class downloads 3 PNG image files from public URL and store them into the store on the local disk.
 
     public class T03WriteMultipleImagesTest {
         private Store store;
@@ -726,15 +737,13 @@ The primary sorting key is the entire String representation of Metadata.
 3.  `{"label":"red apple", …​`
 
 As you seem the strings are sorted in the ascending order: `mi` &lt; `mo` &lt; `re`.
-== 4th example : retrieving a saved material
+== 4th example : retrieving a single Materials from the store
 
-    public class T04SelectASingleMaterialWithQueryTest {
-        private Store store;
-        @BeforeEach
-        public void beforeEach() {
-            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
-            store = Stores.newInstance(testClassOutputDir.resolve("store"));
-        }
+We are going to read the code of
+
+-   [my.sample.T04SelectASingleMaterialWithQueryTest](https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T04SelectASingleMaterialWithQueryTest.java)
+
+<!-- -->
 
         @Test
         public void test04_select_a_single_material_with_query()
@@ -747,12 +756,38 @@ As you seem the strings are sorted in the ascending order: `mi` &lt; `mo` &lt; `
             Material material = store.selectSingle(jobName, jobTimestamp,
                     QueryOnMetadata.builder().put("step", "02").build()); // (20)
             assertNotNull(material);
-            //
-            System.out.printf("%s %s\n",
+
+            System.out.printf("%s %s\n\n",
                     material.getFileType().getExtension(),
                     material.getMetadata().getMetadataIdentification());
 
-## 5th example : Selecting a MaterialList
+            System.out.printf("%s '%s' %s\n\n",
+                    material.getMetadata().get("step"),
+                    material.getMetadata().get("label"),
+                    material.getMetadata().toURLAsString());
+        }
+
+This test retrieves a single Material object which has a Metadata of `"step": "02"`.This test emits the following output:
+
+    > Task :test
+    png {"label":"mikan", "step":"02", "URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/04_mikan.png", "URL.port":"80", "URL.protocol":"https"}
+
+    02 'mikan' https://kazurayam.github.io/materialstore-tutorial/images/tutorial/04_mikan.png
+
+    BUILD SUCCESSFUL in 2s
+
+For detail, have a look at javadocs:
+
+-   [com.kazurayam.materialstore.core.Store#selectSingle(JobName, JobTimestamp, QueryOnMetadata)](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#selectSingle(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp))
+
+-   [com.kazurayam.materialstore.core.Material](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Material.html)
+
+-   [com.kazurayam.materialstore.core.Metadata](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Metadata.html)
+
+-   [com.kazurayam.materialstore.core.QueryOnMetadata](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/QueryOnMetadata.html)
+    == 5th example : Selecting a MaterialList
+
+<!-- -->
 
     package my.sample;
 

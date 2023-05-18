@@ -35,8 +35,8 @@ public class T04SelectASingleMaterialWithQueryTest {
         Material material = store.selectSingle(jobName, jobTimestamp,
                 QueryOnMetadata.builder().put("step", "02").build()); // (20)
         assertNotNull(material);
-        //
-        System.out.printf("%s %s\n",
+
+        System.out.printf("%s %s\n\n",
                 material.getFileType().getExtension(),
                 material.getMetadata().getMetadataIdentification());
 
