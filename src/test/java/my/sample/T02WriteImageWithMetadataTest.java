@@ -33,7 +33,7 @@ public class T02WriteImageWithMetadataTest {
         JobTimestamp jobTimestamp = JobTimestamp.now();
         URL url = SharedMethods.createURL(                     // (10)
                 "https://kazurayam.github.io/materialstore-tutorial/images/tutorial/03_apple.png");
-        byte[] bytes = SharedMethods.downloadUrl(url);         // (11)
+        byte[] bytes = SharedMethods.downloadUrlToByteArray(url);         // (11)
         Material material =
                 store.write(jobName, jobTimestamp,             // (12)
                         FileType.PNG,

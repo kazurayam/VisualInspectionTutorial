@@ -4,3 +4,7 @@
 ----
 include::../../src/test/java/my/sample/T05SelectMaterialListTest.java[]
 ----
+
+=== Sorting the entries by SortKeys
+
+I want to sort the entries in the `index` so that the entry with `"step": "01"` comes first, the entry with `"step": "02"` second, and the entry with `"step": "03"` third.

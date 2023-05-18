@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SharedMethods {
 
@@ -24,7 +26,7 @@ public class SharedMethods {
         }
     }
 
-    public static byte[] downloadUrl(URL toDownload) {
+    public static byte[] downloadUrlToByteArray(URL toDownload) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             byte[] chunk = new byte[4096];
@@ -38,7 +40,6 @@ public class SharedMethods {
             return null;
         }
         byte[] bytes = outputStream.toByteArray();
-        assert bytes != null;
         assert bytes.length != 0;
         return bytes;
     }
@@ -51,29 +52,32 @@ public class SharedMethods {
         URL url1 = SharedMethods.createURL(prefix + "03_apple.png");
         store.write(jn, jt, FileType.PNG,
                 Metadata.builder(url1)
-                        .putAll(ImmutableMap.of(
-                                "step", "01",
-                                "label", "red apple"))
+                        .put("step", "01")
+                        .put("label", "red apple")
                         .build(),
-                SharedMethods.downloadUrl(url1));
+                SharedMethods.downloadUrlToByteArray(url1));
+
         // Mikan
         URL url2 = SharedMethods.createURL(prefix + "04_mikan.png");
+        Map<String, String> m = new HashMap<>();
+        m.put("step", "02");
+        m.put("label", "mikan");
         store.write(jn, jt, FileType.PNG,
                 Metadata.builder(url2)
-                        .putAll(ImmutableMap.of(
-                                "step", "02",
-                                "label", "mikan"))
+                        .putAll(m)
                         .build(),
-                SharedMethods.downloadUrl(url2));
+                SharedMethods.downloadUrlToByteArray(url2));
+
         // Money
         URL url3 = SharedMethods.createURL(prefix + "05_money.png");
         store.write(jn, jt, FileType.PNG,
                 Metadata.builder(url3)
-                        .putAll(ImmutableMap.of(
-                                "step", "03",
+                        .exclude("URL.protocol", "URL.port")
+                        .putAll(ImmutableMap.of("step", "03",
                                 "label", "money"))
                         .build(),
-                SharedMethods.downloadUrl(url3));
+                SharedMethods.downloadUrlToByteArray(url3));
     }
+
 
 }
