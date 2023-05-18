@@ -1,6 +1,10 @@
 == 3rd example: writing multiple Materials
 
-The `T03WriteMultipleImagesTest`  class downloads 3 PNG image files from a public URL and store them into the store.
+We are going to read the code of
+
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T03WriteMultipleImagesTest.java[my.sample.T03WriteMultipleImagesTest]
+
+This class downloads 3 PNG image files from public URL and store them into the store on the local disk.
 
 [source,text]
 ----

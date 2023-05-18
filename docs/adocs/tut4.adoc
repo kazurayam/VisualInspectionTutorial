@@ -1,4 +1,8 @@
-== 4th example : retrieving a saved material
+== 4th example : retrieving a single Materials from the store
+
+We are going to read the code of
+
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T04SelectASingleMaterialWithQueryTest.java[my.sample.T04SelectASingleMaterialWithQueryTest]
 
 [source,text]
 ----

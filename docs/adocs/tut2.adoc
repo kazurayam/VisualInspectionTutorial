@@ -1,6 +1,8 @@
 == 2nd example: write a Material with associated Metadata
 
-I will show you next sample code `test02_write_image_with_metadata` of `T2MetadataTest` class.
+We are going to read the code of
+
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T02WriteImageWithMetadata.java[my.sample.T03WriteImageWithMetadataTest]
 
 [source, text]
 ----

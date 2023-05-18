@@ -10,13 +10,14 @@ import com.kazurayam.materialstore.core.Stores;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class T04SelectASingleMaterialWithQueryTest {
+
     private Store store;
+
     @BeforeEach
     public void beforeEach() {
         Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
@@ -38,6 +39,7 @@ public class T04SelectASingleMaterialWithQueryTest {
         System.out.printf("%s %s\n",
                 material.getFileType().getExtension(),
                 material.getMetadata().getMetadataIdentification());
+
         System.out.printf("%s '%s' %s\n\n",
                 material.getMetadata().get("step"),
                 material.getMetadata().get("label"),

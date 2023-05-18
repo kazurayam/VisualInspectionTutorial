@@ -5,6 +5,7 @@
 
 :toc:
 
+include::adocs/tut0.adoc[]
 include::adocs/tut1.adoc[]
 include::adocs/tut2.adoc[]
 include::adocs/tut3.adoc[]
