@@ -2,7 +2,7 @@
 
 [source,text]
 ----
-include::../../src/test/java/my/sample/T05SelectMaterialListTest.java[]
+include::../src/test/java/my/sample/T05SelectMaterialListTest.java[]
 ----
 
 === Sorting the entries by SortKeys

@@ -6,7 +6,7 @@ We are going to read the code of
 
 [source, text]
 ----
-include::../../src/test/java/my/sample/T02WriteImageWithMetadataTest.java[lines=20..60]
+include::../src/test/java/my/sample/T02WriteImageWithMetadataTest.java[lines=20..60]
 ----
 
 At the line (10), we create an instance of `java.net.URL` with a String argument "link:https://kazurayam.github.io/materialstore-tutorial/images/tutorial/03_apple.png[]". You can click this URL to see the image yourself. You should see an apple.
@@ -16,7 +16,7 @@ I create a helper class named `my.sample.SharedMethod` with a method `createURL(
 [source, text]
 .createURL(String)
 ----
-include::../../src/test/java/my/sample/SharedMethods.java[lines=18..25]
+include::../src/test/java/my/sample/SharedMethods.java[lines=18..25]
 ----
 
 At the statement (11) we get access to the URL. We will effectively download a PNG image file from the URL and obtain a large array of bytes.
@@ -25,7 +25,7 @@ The `downloadURL(URL)` method of `SharedMethods` class implements this processin
 [source,text]
 .downloadUrl(URL)
 ----
-include::../../src/test/java/my/sample/SharedMethods.java[lines=26..44]
+include::../src/test/java/my/sample/SharedMethods.java[lines=26..44]
 ----
 
 The statement (12) invokes `store.write()` method, which create a new file tree, as this:

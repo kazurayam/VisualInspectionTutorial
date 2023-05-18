@@ -54,7 +54,7 @@ You will also find a file `sampleProject/build.gradle` file, but it will be empt
 [source, gradle]
 .build.gradle
 ----
-include::../../build.gradle[lines=1..30]
+include::../build.gradle[lines=1..30]
 ----
 
 Please note that in the build.gradle we declared the dependency to the `materialstore` library, which is published at the Maven Central repository.

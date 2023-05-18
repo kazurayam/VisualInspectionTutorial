@@ -10,7 +10,7 @@ This is a JUnit-based Java code that uses the materialstore library.
 [source, java]
 .T01HelloMaterialstoreTest.java
 ----
-include::../../src/test/java/my/sample/T01HelloMaterialstoreTest.java[]
+include::../src/test/java/my/sample/T01HelloMaterialstoreTest.java[]
 ----
 
 You can run this by running the `test` task of Gradle:
@@ -54,13 +54,13 @@ build/reports/tests/
 
 You want to open the `index.html` in your Web browser to have a look at the test result.
 
-image::../images/tutorial/01_test_report.png[]
+image::https://kazurayam.github.io/materialstore-tutorial/images/tutorial/01_test_report.png[]
 
 === File tree created by "Hello, materialstore"
 
 The 1st test will create a new file tree as output:
 
-image:../images/tutorial/02_test_output_file_tree.png[]
+image:https://kazurayam.github.io/materialstore-tutorial/images/tutorial/02_test_output_file_tree.png[]
 
 Let us read the Java source of the test `T1HelloMaterialstoreTest` line by line to understand the basic concept and classes of the "materialstore" library. Here I assume that you are a well-trained Java programmer who requires no explanation how to code this using JUnit.
 

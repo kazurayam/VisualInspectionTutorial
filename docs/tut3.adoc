@@ -8,7 +8,7 @@ This class downloads 3 PNG image files from public URL and store them into the s
 
 [source,text]
 ----
-include::../../src/test/java/my/sample/T03WriteMultipleImagesTest.java[lines=18..40]
+include::../src/test/java/my/sample/T03WriteMultipleImagesTest.java[lines=18..40]
 ----
 
 This code calls `SharedMethods.write3images(Store, JobName, JobTimestap)` method. It is implemented as this:
@@ -16,7 +16,7 @@ This code calls `SharedMethods.write3images(Store, JobName, JobTimestap)` method
 [source, java]
 .SharedMethod.write3images
 ----
-include::../../src/test/java/my/sample/SharedMethods.java[lines=46..80]
+include::../src/test/java/my/sample/SharedMethods.java[lines=46..80]
 ----
 
 This code makes HTTP requests to the following URLs:
@@ -34,7 +34,7 @@ ____
 
 This code will save the image files into a directory inside the `store` directory. When you run this test, you will get a new file tree as follows.
 
-image:../images/tutorial/08_writing_multiple_images.png[]
+image:https://kazurayam.github.io/materialstore-tutorial/images/tutorial/08_writing_multiple_images.png[]
 
 The `index` file will contain 3 lines, one for each PNG image file.
 
@@ -54,7 +54,7 @@ Let's read the code and the index entries and find the details.
 
 [source]
 ----
-include::../../src/test/java/my/sample/SharedMethods.java[lines=54..57]
+include::../src/test/java/my/sample/SharedMethods.java[lines=54..57]
 ----
 
 The above code generated the following Metadata instance:
@@ -74,7 +74,7 @@ Instead of calling `.put(String key, String value)` multiple times, you can all 
 
 [source]
 ----
-include::../../src/test/java/my/sample/SharedMethods.java[lines=62..69]
+include::../src/test/java/my/sample/SharedMethods.java[lines=62..69]
 ----
 
 The above code does not look very stylish.　Creating an instance of HashMap class is verbose; unfortunately Java language does not have a Map literal like JSON `{"label": "mikan", "step": "i02"}`). As the second best, you can rewrite this code as follows using Google's link:https://github.com/google/guava[Guava]:
@@ -98,7 +98,7 @@ import com.google.common.collect.ImmutableMap;
 
 [source]
 ----
-include::../../src/test/java/my/sample/SharedMethods.java[lines=73..78]
+include::../src/test/java/my/sample/SharedMethods.java[lines=73..78]
 ----
 
 This code generates a Metadata like this:

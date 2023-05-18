@@ -258,14 +258,14 @@ The `test` task of Gradle will create a report in HTML format where you can find
 You want to open the `index.html` in your Web browser to have a look at the test result.
 
 <figure>
-<img src="../images/tutorial/01_test_report.png" alt="01 test report" />
+<img src="https://kazurayam.github.io/materialstore-tutorial/images/tutorial/01_test_report.png" alt="01 test report" />
 </figure>
 
 ### File tree created by "Hello, materialstore"
 
 The 1st test will create a new file tree as output:
 
-![02 test output file tree](../images/tutorial/02_test_output_file_tree.png)
+![02 test output file tree](https://kazurayam.github.io/materialstore-tutorial/images/tutorial/02_test_output_file_tree.png)
 
 Let us read the Java source of the test `T1HelloMaterialstoreTest` line by line to understand the basic concept and classes of the "materialstore" library. Here I assume that you are a well-trained Java programmer who requires no explanation how to code this using JUnit.
 
@@ -646,7 +646,7 @@ This code makes HTTP requests to the following URLs:
 
 This code will save the image files into a directory inside the `store` directory. When you run this test, you will get a new file tree as follows.
 
-![08 writing multiple images](../images/tutorial/08_writing_multiple_images.png)
+![08 writing multiple images](https://kazurayam.github.io/materialstore-tutorial/images/tutorial/08_writing_multiple_images.png)
 
 The `index` file will contain 3 lines, one for each PNG image file.
 
