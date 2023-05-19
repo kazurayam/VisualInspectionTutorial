@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -62,7 +63,9 @@ public class T05SelectMaterialListTest {
         SharedMethods.write3images(store, jobName, jobTimestamp);
         MaterialList materialList =
                 store.select(jobName, jobTimestamp,
-                        QueryOnMetadata.builder().put("label", "[a-z]+") // (21)
+                        QueryOnMetadata.builder()
+                                .put("label",
+                                        Pattern.compile("m[a-z]+")) // (21)
                                 .build());
         assertEquals(2, materialList.size());
     }
