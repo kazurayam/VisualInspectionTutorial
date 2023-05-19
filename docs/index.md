@@ -23,9 +23,11 @@
         -   [Metadata.Builder.exclude(String keys…​)](#metadata-builder-excludestring-keys)
         -   [Order of lines in the "index" file](#order-of-lines-in-the-index-file)
     -   [4th example: retrieving a single Material from the store](#4th-example-retrieving-a-single-material-from-the-store)
-    -   [5th example: Selecting a MaterialList](#5th-example-selecting-a-materiallist)
-        -   [Sorting the entries by SortKeys](#sorting-the-entries-by-sortkeys)
-    -   [6th example: generate a HTML report of a MaterialList](#6th-example-generate-a-html-report-of-a-materiallist)
+    -   [5th example: Selecting a List of Materials](#5th-example-selecting-a-list-of-materials)
+        -   [Selecting all Materials in a JobName/JobTimestamp directory](#selecting-all-materials-in-a-jobnamejobtimestamp-directory)
+        -   [Variations of Store.select(…​) methods](#variations-of-store-select-methods)
+        -   [Selecting Materials with QueryOnMetadata specified with exact match](#selecting-materials-with-queryonmetadata-specified-with-exact-match)
+        -   [Selecting Materials using Regular Expression](#selecting-materials-using-regular-expression)
 
 # Materialstore Tutorial
 
@@ -800,44 +802,24 @@ For detail, have a look at javadocs:
 
 -   [com.kazurayam.materialstore.core.QueryOnMetadata](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/QueryOnMetadata.html)
 
-## 5th example: Selecting a MaterialList
+## 5th example: Selecting a List of Materials
 
-    package my.sample;
+We are going to read the code of
 
-    import com.kazurayam.materialstore.core.JobName;
-    import com.kazurayam.materialstore.core.JobTimestamp;
-    import com.kazurayam.materialstore.core.Material;
-    import com.kazurayam.materialstore.core.MaterialList;
-    import com.kazurayam.materialstore.core.MaterialstoreException;
-    import com.kazurayam.materialstore.core.QueryOnMetadata;
-    import com.kazurayam.materialstore.core.Store;
-    import com.kazurayam.materialstore.core.Stores;
-    import org.junit.jupiter.api.BeforeEach;
-    import org.junit.jupiter.api.Test;
+-   [my.sample.T05SelectMaterialListTest](https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T05SelectMaterialListTest.java)
 
-    import java.io.IOException;
-    import java.nio.file.Path;
+### Selecting all Materials in a JobName/JobTimestamp directory
 
-    public class T05SelectMaterialListTest {
-        private Store store;
-        @BeforeEach
-        public void beforeEach() {
-            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
-            store = Stores.newInstance(testClassOutputDir.resolve("store"));
-        }
+Specifying `QueryOnMetadata.ANY` means you do not differentiates them by Metadata.
 
         @Test
-        public void test05_select_list_of_material()
-                throws MaterialstoreException {
-            JobName jobName =
-                    new JobName("test04_select_lest_of_materials");
+        public void test05_select_list_of_material() throws MaterialstoreException {
+            JobName jobName = new JobName("test05_select_lest_of_materials");
             JobTimestamp jobTimestamp = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, jobTimestamp);
-            //
             MaterialList materialList =
                     store.select(jobName, jobTimestamp,
                             QueryOnMetadata.ANY);              // (18)
-            //
             for (Material material : materialList) {           // (19)
                 System.out.printf("%s %s\n",
                         material.getFileType().getExtension(),
@@ -847,32 +829,83 @@ For detail, have a look at javadocs:
                         material.getMetadata().get("label"),
                         material.getMetadata().toURLAsString());
             }
-        }
-    }
 
-### Sorting the entries by SortKeys
+### Variations of Store.select(…​) methods
 
-I want to sort the entries in the `index` so that the entry with `"step": "01"` comes first, the entry with `"step": "02"` second, and the entry with `"step": "03"` third.
+[`Store.select(…​)`](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#select(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp)) method returns an instance of [com.kazurayam.materialstore.core.MaterialList](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/MaterialList.html), which is a list of Materials retrieved from the store.
 
-## 6th example: generate a HTML report of a MaterialList
+The `Store.select(…​)` methods has several variation of arguments:
 
-        private Store store;
-        @BeforeEach
-        public void beforeEach() {
-            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
-            store = Stores.newInstance(testClassOutputDir.resolve("store"));
-        }
+-   select(JobName, JobTimestamp)
+
+-   select(JobName, JobTimestamp, QueryOnMetadata)
+
+-   select(JobName, JobTimestamp, FileType)
+
+-   select(JobName, JobTimestamp, FileType, QueryOnMetadata)
+
+You can specify selection criteria as the parameters to these method call.
+
+### Selecting Materials with QueryOnMetadata specified with exact match
+
+[QueryOnMetadata](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/QueryOnMetadata.html) is something like [Metadata](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Metadata.html). QueryOnMetadata is a collection **key=value** pairs. You can make a query for Materials with Metadata that matches with the QueryOnMetadata object.
+
+For example, the following code shows how to get a MaterialList which contains Materials with its `label` attribute is exactly equal to `mikan`.
 
         @Test
-        public void test06_makeMaterialListReport() throws MaterialstoreException {
-            JobName jobName =
-                    new JobName("test06_makeMaterialListReport");
+        public void test05_select_with_query() throws MaterialstoreException {
+            JobName jobName = new JobName("test05_select_with_query");
             JobTimestamp jobTimestamp = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, jobTimestamp);
-
             MaterialList materialList =
                     store.select(jobName, jobTimestamp,
-                            QueryOnMetadata.ANY);              // (18)
+                            QueryOnMetadata.builder().put("label", "mikan") // (20)
+                                    .build());
+            assertEquals(1, materialList.size());
+
+### Selecting Materials using Regular Expression
+
+You can also use Regular Expression to match against the value of Metadata of Materials.
+
+        @Test
+        public void test05_select_with_Regex() throws MaterialstoreException {
+            JobName jobName = new JobName("test05_select_with_Regex");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);
+            MaterialList materialList =
+                    store.select(jobName, jobTimestamp,
+                            QueryOnMetadata.builder()
+                                    .put("label",
+                                            Pattern.compile("m[a-z]+")) // (21)
+                                    // "mikan" and "money" will match,
+                                    // but "red apple" won't
+                                    .build());
+            assertEquals(2, materialList.size());
+        }
+    ---
+
+
+    == 6th example: generate a HTML report of a MaterialList
+
+    [source,text]
+
+    private Store store;
+    @BeforeEach
+    public void beforeEach() {
+        Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
+        store = Stores.newInstance(testClassOutputDir.resolve("store"));
+    }
+
+    @Test
+    public void test06_makeMaterialListReport() throws MaterialstoreException {
+        JobName jobName =
+                new JobName("test06_makeMaterialListReport");
+        JobTimestamp jobTimestamp = JobTimestamp.now();
+        SharedMethods.write3images(store, jobName, jobTimestamp);
+
+    MaterialList materialList =
+            store.select(jobName, jobTimestamp,
+                    QueryOnMetadata.ANY);              // (18)
 
             Inspector inspector = Inspector.newInstance(store);
             inspector.setSortKeys(new SortKeys("step"));

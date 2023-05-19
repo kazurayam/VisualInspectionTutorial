@@ -66,6 +66,8 @@ public class T05SelectMaterialListTest {
                         QueryOnMetadata.builder()
                                 .put("label",
                                         Pattern.compile("m[a-z]+")) // (21)
+                                // "mikan" and "money" will match,
+                                // but "red apple" won't
                                 .build());
         assertEquals(2, materialList.size());
     }

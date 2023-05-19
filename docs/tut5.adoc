@@ -4,11 +4,16 @@ We are going to read the code of
 
 - link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T05SelectMaterialListTest.java[my.sample.T05SelectMaterialListTest]
 
+=== Selecting all Materials in a JobName/JobTimestamp directory
+
+Specifying `QueryOnMetadata.ANY` means you do not differentiates them by Metadata.
 
 [source,text]
 ----
 include::../src/test/java/my/sample/T05SelectMaterialListTest.java[lines=27..44]
 ----
+
+=== Variations of Store.select(...) methods
 
 link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#select(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp)[`Store.select(...)`] method returns an instance of link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/MaterialList.html[com.kazurayam.materialstore.core.MaterialList], which is a list of Materials retrieved from the store.
 
@@ -21,6 +26,8 @@ The `Store.select(...)` methods has several variation of arguments:
 
 You can specify selection criteria as the parameters to these method call.
 
+=== Selecting Materials with QueryOnMetadata specified with exact match
+
 link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/QueryOnMetadata.html[QueryOnMetadata] is something like link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Metadata.html[Metadata]. QueryOnMetadata is a collection *key=value* pairs. You can make a query for Materials with Metadata that matches with the QueryOnMetadata object.
 
 For example, the following code shows how to get a MaterialList which contains Materials with its `label` attribute is exactly equal to `mikan`.
@@ -29,3 +36,13 @@ For example, the following code shows how to get a MaterialList which contains M
 ----
 include::../src/test/java/my/sample/T05SelectMaterialListTest.java[lines=46..56]
 ----
+
+=== Selecting Materials using Regular Expression
+
+You can also use Regular Expression to match against the value of Metadata of Materials.
+
+[source,text]
+----
+include::../src/test/java/my/sample/T05SelectMaterialListTest.java[lines=59..73]
+---
+
