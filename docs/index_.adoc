@@ -16,3 +16,5 @@ include::tut4.adoc[]
 include::tut5.adoc[]
 
 include::tut6.adoc[]
+
+include::tut7.adoc[]

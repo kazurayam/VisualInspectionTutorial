@@ -35,5 +35,7 @@ You can click one of the rows to open it. When opened, you can see the PNG image
 
 image::https://kazurayam.github.io/materialstore-tutorial/images/tutorial//10_MaterialListReport_apple.png[]
 
-The report HTML file is created immediately under the `store` directory, and the file name will be in the format of `store/<JobName>-<JobTimestamp>.html`. The location and the file name is fixed. You should not try to change it; you would not need to do so.
+The location and the name of the report HTML is fixed. The report HTML file will be located immediately under the `store` directory. The file name will be in the format of `store/<JobName>-<JobTimestamp>.html`.
+
+
 
