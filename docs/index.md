@@ -28,6 +28,7 @@
         -   [Variations of Store.select(…​) methods](#variations-of-store-select-methods)
         -   [Selecting Materials with QueryOnMetadata specified with exact match](#selecting-materials-with-queryonmetadata-specified-with-exact-match)
         -   [Selecting Materials using Regular Expression](#selecting-materials-using-regular-expression)
+    -   [6th example: generate an HTML report of a MaterialList](#6th-example-generate-an-html-report-of-a-materiallist)
 
 # Materialstore Tutorial
 
@@ -882,41 +883,37 @@ You can also use Regular Expression to match against the value of Metadata of Ma
                                     .build());
             assertEquals(2, materialList.size());
         }
-    ---
 
+## 6th example: generate an HTML report of a MaterialList
 
-    == 6th example: generate an HTML report of a MaterialList
+We are going to read the code of
 
-    We are going to read the code of
+-   [my.sample.T06MaterialListReportTest](https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T06MaterialListReportTest.java)
 
-    - link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T06MaterialListReportTest.java[my.sample.T06MaterialListReportTest]
+Once you saved several screenshots into the store, you would frequently want to review them. You would want to look the images associated with various metadata. The following code shows how to compile an HTML that renders 3 PNG images with metadata.
 
-    Once you saved several screenshots into the store, you would frequently want to review them. You would want to look the images associated with various metadata. The following code shows how to compile an HTML that renders 3 PNG images with metadata.
+    public class T06MaterialListReportTest {
+        private Store store;
+        @BeforeEach
+        public void beforeEach() {
+            Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
+            store = Stores.newInstance(testClassOutputDir.resolve("store"));
+        }
 
-    [source,text]
+        @Test
+        public void test06_makeMaterialListReport() throws MaterialstoreException {
+            JobName jobName =
+                    new JobName("test06_makeMaterialListReport");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            // write 3 PNG files into the store
+            SharedMethods.write3images(store, jobName, jobTimestamp);
 
-public class T06MaterialListReportTest {
-private Store store;
-@BeforeEach
-public void beforeEach() {
-Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
-store = Stores.newInstance(testClassOutputDir.resolve("store"));
-}
+            MaterialList materialList =
+                    store.select(jobName, jobTimestamp,
+                            QueryOnMetadata.ANY);
 
-    @Test
-    public void test06_makeMaterialListReport() throws MaterialstoreException {
-        JobName jobName =
-                new JobName("test06_makeMaterialListReport");
-        JobTimestamp jobTimestamp = JobTimestamp.now();
-        // write 3 PNG files into the store
-        SharedMethods.write3images(store, jobName, jobTimestamp);
-
-    MaterialList materialList =
-            store.select(jobName, jobTimestamp,
-                    QueryOnMetadata.ANY);
-
-    Inspector inspector = Inspector.newInstance(store);  // (22)
-    inspector.setSortKeys(new SortKeys("step"));   // (23)
+            Inspector inspector = Inspector.newInstance(store);  // (22)
+            inspector.setSortKeys(new SortKeys("step"));   // (23)
 
             Path report = inspector.report(materialList);        // (24)
             assertNotNull(report);
@@ -924,27 +921,29 @@ store = Stores.newInstance(testClassOutputDir.resolve("store"));
         }
     }
 
-    Running this JUnit5 test will result a new file tree at `build/tmp/testOutput/my.sample.T06MaterialListReportTest/`. It will look somehting like this:
+Running this JUnit5 test will result a new file tree at `build/tmp/testOutput/my.sample.T06MaterialListReportTest/`. It will look somehting like this:
 
-    [source]
+    build/tmp/testOutput/my.sample.T06MaterialListReportTest/
+    └── store
+        ├── test06_makeMaterialListReport
+        │   └── 20230519_172740
+        │       ├── index
+        │       └── objects
+        │           ├── 27b2d39436d0655e7e8885c7f2a568a646164280.png
+        │           ├── 36f9f62bdb3ad45cb8c6bc1f4062fbbd4fd180db.png
+        │           └── 8a997bec64cd056c2075da95c0c281320ee7a7c1.png
+        └── test06_makeMaterialListReport-20230519_172740.html
 
-build/tmp/testOutput/my.sample.T06MaterialListReportTest/
-└── store
-├── test06\_makeMaterialListReport
-│   └── 20230519\_172740
-│   ├── index
-│   └── objects
-│   ├── 27b2d39436d0655e7e8885c7f2a568a646164280.png
-│   ├── 36f9f62bdb3ad45cb8c6bc1f4062fbbd4fd180db.png
-│   └── 8a997bec64cd056c2075da95c0c281320ee7a7c1.png
-└── test06\_makeMaterialListReport-20230519\_172740.html
+The top page shows a list of Materials.
 
-    Please note a new HTML file is created at the path of `store/<JobName>-<JobTimestamp>.html`.
+<figure>
+<img src="https://kazurayam.github.io/materialstore-tutorial/images/tutorial//09_MaterialListReport_list.png" alt="09 MaterialListReport list" />
+</figure>
 
-    The top page shows a list of Materials.
+You can click one of the rows to open it. When opened, you can see the PNG image is rendered.
 
-    image::https://kazurayam.github.io/materialstore-tutorial/images/09_MaterialListReport_list.png[]
+<figure>
+<img src="https://kazurayam.github.io/materialstore-tutorial/images/tutorial//10_MaterialListReport_apple.png" alt="10 MaterialListReport apple" />
+</figure>
 
-    You can click one of the rows to open it. When opened, you can see the PNG image is rendered.
-
-    image::https://kazurayam.github.io/materialstore-tutorial/images/10_MaterialListReport_apple.png[]
+The report HTML file is created immediately under the `store` directory, and the file name will be in the format of `store/<JobName>-<JobTimestamp>.html`. The location and the file name is fixed. You should not try to change it; you would not need to do so.
