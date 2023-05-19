@@ -885,32 +885,66 @@ You can also use Regular Expression to match against the value of Metadata of Ma
     ---
 
 
-    == 6th example: generate a HTML report of a MaterialList
+    == 6th example: generate an HTML report of a MaterialList
+
+    We are going to read the code of
+
+    - link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T06MaterialListReportTest.java[my.sample.T06MaterialListReportTest]
+
+    Once you saved several screenshots into the store, you would frequently want to review them. You would want to look the images associated with various metadata. The following code shows how to compile an HTML that renders 3 PNG images with metadata.
 
     [source,text]
 
-    private Store store;
-    @BeforeEach
-    public void beforeEach() {
-        Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
-        store = Stores.newInstance(testClassOutputDir.resolve("store"));
-    }
+public class T06MaterialListReportTest {
+private Store store;
+@BeforeEach
+public void beforeEach() {
+Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
+store = Stores.newInstance(testClassOutputDir.resolve("store"));
+}
 
     @Test
     public void test06_makeMaterialListReport() throws MaterialstoreException {
         JobName jobName =
                 new JobName("test06_makeMaterialListReport");
         JobTimestamp jobTimestamp = JobTimestamp.now();
+        // write 3 PNG files into the store
         SharedMethods.write3images(store, jobName, jobTimestamp);
 
     MaterialList materialList =
             store.select(jobName, jobTimestamp,
-                    QueryOnMetadata.ANY);              // (18)
+                    QueryOnMetadata.ANY);
 
-            Inspector inspector = Inspector.newInstance(store);
-            inspector.setSortKeys(new SortKeys("step"));
-            Path report = inspector.report(materialList);
+    Inspector inspector = Inspector.newInstance(store);  // (22)
+    inspector.setSortKeys(new SortKeys("step"));   // (23)
+
+            Path report = inspector.report(materialList);        // (24)
             assertNotNull(report);
             System.out.println("report is found at " + report);
         }
     }
+
+    Running this JUnit5 test will result a new file tree at `build/tmp/testOutput/my.sample.T06MaterialListReportTest/`. It will look somehting like this:
+
+    [source]
+
+build/tmp/testOutput/my.sample.T06MaterialListReportTest/
+└── store
+├── test06\_makeMaterialListReport
+│   └── 20230519\_172740
+│   ├── index
+│   └── objects
+│   ├── 27b2d39436d0655e7e8885c7f2a568a646164280.png
+│   ├── 36f9f62bdb3ad45cb8c6bc1f4062fbbd4fd180db.png
+│   └── 8a997bec64cd056c2075da95c0c281320ee7a7c1.png
+└── test06\_makeMaterialListReport-20230519\_172740.html
+
+    Please note a new HTML file is created at the path of `store/<JobName>-<JobTimestamp>.html`.
+
+    The top page shows a list of Materials.
+
+    image::https://kazurayam.github.io/materialstore-tutorial/images/09_MaterialListReport_list.png[]
+
+    You can click one of the rows to open it. When opened, you can see the PNG image is rendered.
+
+    image::https://kazurayam.github.io/materialstore-tutorial/images/10_MaterialListReport_apple.png[]
