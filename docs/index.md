@@ -1,6 +1,6 @@
 -   [Materialstore Tutorial](#materialstore-tutorial)
     -   [Setting up a project](#setting-up-a-project)
-    -   [1st example : "Hello, materialstore!"](#1st-example-hello-materialstore)
+    -   [1st example: "Hello, materialstore!"](#1st-example-hello-materialstore)
         -   [File tree created by "Hello, materialstore"](#file-tree-created-by-hello-materialstore)
         -   [Create a base directory](#create-a-base-directory)
         -   [Create the "store" directory](#create-the-store-directory)
@@ -21,11 +21,11 @@
         -   [Metadata.Builder.put(String key, String value)](#metadata-builder-putstring-key-string-value)
         -   [Metadata.Builder.putAll(Map&lt;String,String&gt;)](#metadata-builder-putallmapstringstring)
         -   [Metadata.Builder.exclude(String keys…​)](#metadata-builder-excludestring-keys)
-        -   [Sorting the "index" file](#sorting-the-index-file)
-    -   [4th example : retrieving a single Materials from the store](#4th-example-retrieving-a-single-materials-from-the-store)
-    -   [5th example : Selecting a MaterialList](#5th-example-selecting-a-materiallist)
+        -   [Order of lines in the "index" file](#order-of-lines-in-the-index-file)
+    -   [4th example: retrieving a single Material from the store](#4th-example-retrieving-a-single-material-from-the-store)
+    -   [5th example: Selecting a MaterialList](#5th-example-selecting-a-materiallist)
         -   [Sorting the entries by SortKeys](#sorting-the-entries-by-sortkeys)
-    -   [6th example : generate a HTML report of a MaterialList](#6th-example-generate-a-html-report-of-a-materiallist)
+    -   [6th example: generate a HTML report of a MaterialList](#6th-example-generate-a-html-report-of-a-materiallist)
 
 # Materialstore Tutorial
 
@@ -142,7 +142,7 @@ You can check if the project is properly setup by executing a command, as follow
     BUILD SUCCESSFUL in 1s
     1 actionable task: 1 executed
 
-## 1st example : "Hello, materialstore!"
+## 1st example: "Hello, materialstore!"
 
 We are going to read the code of
 
@@ -721,9 +721,9 @@ This code generates a Metadata like this:
 
 Please note that `URL.host` and `URL.path` are included but `URL.protocol` and `URL.port` are excluded.
 
-### Sorting the "index" file
+### Order of lines in the "index" file
 
-Let’s look at the lines in the `index` file. In which order the lines of the `index` file sorted?
+Let’s look at the `index` file. It is a text file with 1 or more lines. In which order the lines are ordered?
 
 **index**
 
@@ -731,7 +731,7 @@ Let’s look at the lines in the `index` file. In which order the lines of the `
     36f9f62bdb3ad45cb8c6bc1f4062fbbd4fd180db        png     {"label":"money", ...
     27b2d39436d0655e7e8885c7f2a568a646164280        png     {"label":"red apple", ...
 
-Obviously the ID is not the primary key of sorting the lines.
+Obviously the ID, 40 hex-decimal characters, is not the primary key of sorting the lines.
 
 The primary sorting key is the entire String representation of Metadata.
 
@@ -743,7 +743,13 @@ The primary sorting key is the entire String representation of Metadata.
 
 As you seem the strings are sorted in the ascending order: `mi` &lt; `mo` &lt; `re`.
 
-## 4th example : retrieving a single Materials from the store
+The order of attributes in the Metadata is significant. Let’s assume that we could place the `step` attribute comes left-most, then the order of lines will change:
+
+    27b2d39436d0655e7e8885c7f2a568a646164280        png     {"step":"01", "label":"red apple", "URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/03_apple.png", "URL.port":"80", "URL.protocol":"https"}
+    8a997bec64cd056c2075da95c0c281320ee7a7c1        png     {"step":"02", "label":"mikan", "URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/04_mikan.png", "URL.port":"80", "URL.protocol":"https"}
+    36f9f62bdb3ad45cb8c6bc1f4062fbbd4fd180db        png     {"step":"03", "label":"money", "URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/05_money.png"}
+
+## 4th example: retrieving a single Material from the store
 
 We are going to read the code of
 
@@ -759,8 +765,9 @@ We are going to read the code of
             JobTimestamp jobTimestamp = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, jobTimestamp);
             //
-            Material material = store.selectSingle(jobName, jobTimestamp,
-                    QueryOnMetadata.builder().put("step", "02").build()); // (20)
+            Material material =
+                    store.selectSingle(jobName, jobTimestamp,
+                            QueryOnMetadata.builder().put("step", "02").build()); // (20)
             assertNotNull(material);
 
             System.out.printf("%s %s\n\n",
@@ -772,6 +779,7 @@ We are going to read the code of
                     material.getMetadata().get("label"),
                     material.getMetadata().toURLAsString());
         }
+    }
 
 This test retrieves a single Material object which has a Metadata of `"step": "02"`.This test emits the following output:
 
@@ -792,7 +800,7 @@ For detail, have a look at javadocs:
 
 -   [com.kazurayam.materialstore.core.QueryOnMetadata](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/QueryOnMetadata.html)
 
-## 5th example : Selecting a MaterialList
+## 5th example: Selecting a MaterialList
 
     package my.sample;
 
@@ -846,7 +854,7 @@ For detail, have a look at javadocs:
 
 I want to sort the entries in the `index` so that the entry with `"step": "01"` comes first, the entry with `"step": "02"` second, and the entry with `"step": "03"` third.
 
-## 6th example : generate a HTML report of a MaterialList
+## 6th example: generate a HTML report of a MaterialList
 
         private Store store;
         @BeforeEach

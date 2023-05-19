@@ -1,4 +1,4 @@
-== 4th example : retrieving a single Materials from the store
+== 4th example: retrieving a single Material from the store
 
 We are going to read the code of
 
@@ -6,7 +6,7 @@ We are going to read the code of
 
 [source,text]
 ----
-include::../src/test/java/my/sample/T04SelectASingleMaterialWithQueryTest.java[lines=27..47]
+include::../src/test/java/my/sample/T04SelectASingleMaterialWithQueryTest.java[lines=27..50]
 ----
 
 This test retrieves a single Material object which has a Metadata of `"step": "02"`.This test emits the following output:

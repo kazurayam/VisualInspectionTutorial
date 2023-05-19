@@ -1,4 +1,4 @@
-== 6th example : generate a HTML report of a MaterialList
+== 6th example: generate a HTML report of a MaterialList
 
 [source,text]
 ----

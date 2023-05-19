@@ -1,4 +1,4 @@
-== 8th example : Image Diff, Text Diff
+== 8th example: Image Diff, Text Diff
 
 TO AUTHOR YET
 

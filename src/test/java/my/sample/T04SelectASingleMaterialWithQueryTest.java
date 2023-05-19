@@ -32,8 +32,9 @@ public class T04SelectASingleMaterialWithQueryTest {
         JobTimestamp jobTimestamp = JobTimestamp.now();
         SharedMethods.write3images(store, jobName, jobTimestamp);
         //
-        Material material = store.selectSingle(jobName, jobTimestamp,
-                QueryOnMetadata.builder().put("step", "02").build()); // (20)
+        Material material =
+                store.selectSingle(jobName, jobTimestamp,
+                        QueryOnMetadata.builder().put("step", "02").build()); // (20)
         assertNotNull(material);
 
         System.out.printf("%s %s\n\n",

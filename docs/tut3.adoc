@@ -110,9 +110,9 @@ This code generates a Metadata like this:
 
 Please note that `URL.host` and `URL.path` are included but `URL.protocol` and `URL.port` are excluded.
 
-=== Sorting the "index" file
+=== Order of lines in the "index" file
 
-Let's look at the lines in the `index` file. In which order the lines of the `index` file sorted?
+Let's look at the `index` file. It is a text file with 1 or more lines. In which order the lines are ordered?
 
 [source,text]
 .index
@@ -122,7 +122,7 @@ Let's look at the lines in the `index` file. In which order the lines of the `in
 27b2d39436d0655e7e8885c7f2a568a646164280        png     {"label":"red apple", ...
 ----
 
-Obviously the ID is not the primary key of sorting the lines.
+Obviously the ID, 40 hex-decimal characters, is not the primary key of sorting the lines.
 
 The primary sorting key is the entire String representation of Metadata.
 
@@ -131,3 +131,12 @@ The primary sorting key is the entire String representation of Metadata.
 3. `{"label":"red apple", ...`
 
 As you seem the strings are sorted in the ascending order: `mi` < `mo` < `re`.
+
+The order of attributes in the Metadata is significant. Let's assume that we could place the `step` attribute comes left-most, then the order of lines will change:
+
+[source]
+----
+27b2d39436d0655e7e8885c7f2a568a646164280        png     {"step":"01", "label":"red apple", "URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/03_apple.png", "URL.port":"80", "URL.protocol":"https"}
+8a997bec64cd056c2075da95c0c281320ee7a7c1        png     {"step":"02", "label":"mikan", "URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/04_mikan.png", "URL.port":"80", "URL.protocol":"https"}
+36f9f62bdb3ad45cb8c6bc1f4062fbbd4fd180db        png     {"step":"03", "label":"money", "URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/05_money.png"}
+----

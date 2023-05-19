@@ -1,5 +1,5 @@
 
-== 1st example : "Hello, materialstore!"
+== 1st example: "Hello, materialstore!"
 
 We are going to read the code of
 
