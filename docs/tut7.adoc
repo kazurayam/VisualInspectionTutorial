@@ -60,5 +60,91 @@ include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=20.
 include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=27..32]
 ----
 
+=== Getting a LocalDateTime out of a JobTimestamp object
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=34..39]
+----
+
+=== Verifying if a String is in a valid JobTimestamp format
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=41..45]
+----
+
+=== Equals method
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=47..54]
+----
+
+=== CompareTo method
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=56..64]
+----
+
+=== Finding the maximum value
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=66..72]
+----
+
+=== plus operations
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=74..80]
+----
+
+=== minus operations
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=82..88]
+----
+
+=== Getting the end of the month
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=90..95]
+----
+
+=== Getting the beginning of the month
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=97..102]
+----
+
+=== Getting the difference seconds between 2 JobTimestamp objects
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=104..110]
+----
+
+=== Creating a JobTimestamp later than the given base JobTimestamp
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=113..120]
+----
+
+=== Compare a JobTimestamp against a base JobTimestamp to find one newer than the base
+
+[source]
+----
+include::../src/test/java/my/sample/T07JobTimestampOperationsTest.java[lines=122..133]
+----
+
+
+
 
 

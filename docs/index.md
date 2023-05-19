@@ -33,6 +33,18 @@
         -   [Constructing a JobTimestamp that represents the current timestamp](#constructing-a-jobtimestamp-that-represents-the-current-timestamp)
         -   [Constructing a JobTimestamp with String argument](#constructing-a-jobtimestamp-with-string-argument)
         -   [Constructing a JobTimestamp with LocalDateTime argument](#constructing-a-jobtimestamp-with-localdatetime-argument)
+        -   [Getting a LocalDateTime out of a JobTimestamp object](#getting-a-localdatetime-out-of-a-jobtimestamp-object)
+        -   [Verifying if a String is in a valid JobTimestamp format](#verifying-if-a-string-is-in-a-valid-jobtimestamp-format)
+        -   [Equals method](#equals-method)
+        -   [CompareTo method](#compareto-method)
+        -   [Finding the maximum value](#finding-the-maximum-value)
+        -   [plus operations](#plus-operations)
+        -   [minus operations](#minus-operations)
+        -   [Getting the end of the month](#getting-the-end-of-the-month)
+        -   [Getting the beginning of the month](#getting-the-beginning-of-the-month)
+        -   [Getting the difference seconds between 2 JobTimestamp objects](#getting-the-difference-seconds-between-2-jobtimestamp-objects)
+        -   [Creating a JobTimestamp later than the given base JobTimestamp](#creating-a-jobtimestamp-later-than-the-given-base-jobtimestamp)
+        -   [Compare a JobTimestamp against a base JobTimestamp to find one newer than the base](#compare-a-jobtimestamp-against-a-base-jobtimestamp-to-find-one-newer-than-the-base)
 
 # Materialstore Tutorial
 
@@ -1015,4 +1027,128 @@ The `com.kazurayam.materialstore.core.JobTimestamp` class implements a rich set 
             LocalDateTime now = LocalDateTime.now();
             JobTimestamp jt = JobTimestamp.create(now);
             System.out.println("jt=" + jt.toString());
+        }
+
+### Getting a LocalDateTime out of a JobTimestamp object
+
+        @Test
+        public void test_value() {
+            JobTimestamp jt = JobTimestamp.now();
+            LocalDateTime ldt = jt.value();
+            System.out.println("ldt=" + ldt.toString());
+        }
+
+### Verifying if a String is in a valid JobTimestamp format
+
+        @Test
+        public void test_isValid() {
+            assertTrue(JobTimestamp.isValid("20230516_030405"));
+            assertFalse(JobTimestamp.isValid("this is not a valid JobTimestamp"));
+        }
+
+### Equals method
+
+        @Test
+        public void test_equals() {
+            JobTimestamp jt1 = new JobTimestamp("20230516_000000");
+            JobTimestamp jt2 = new JobTimestamp("20230516_030405");
+            JobTimestamp jt3 = new JobTimestamp("20230516_030405");
+            assertFalse(jt1.equals(jt2));
+            assertTrue(jt2.equals(jt3));
+        }
+
+### CompareTo method
+
+        @Test
+        public void test_compareTo() {
+            JobTimestamp jt1 = new JobTimestamp("20230516_000000");
+            JobTimestamp jt2 = new JobTimestamp("20230516_030405");
+            JobTimestamp jt3 = new JobTimestamp("20230516_030405");
+            assertTrue(jt1.compareTo(jt2) < 0);
+            assertTrue(jt2.compareTo(jt3) == 0);
+            assertTrue(jt2.compareTo(jt1) > 0);
+        }
+
+### Finding the maximum value
+
+        @Test
+        public void test_max() {
+            JobTimestamp jt1 = new JobTimestamp("20220216_070203");
+            JobTimestamp jt2 = new JobTimestamp("20230516_010800");
+            JobTimestamp max = JobTimestamp.max(jt1, jt2);
+            assertEquals(jt2, max);
+        }
+
+### plus operations
+
+        @Test
+        public void test_plus() {
+            JobTimestamp base = new JobTimestamp("20230516_010800");
+            JobTimestamp calc = base.plusDays(1).plusHours(2)
+                    .plusMinutes(3).plusSeconds(4);
+            assertEquals(new JobTimestamp("20230517_031104"), calc);
+        }
+
+### minus operations
+
+        @Test
+        public void test_minus() {
+            JobTimestamp base = new JobTimestamp("20230516_111810");
+            JobTimestamp calc = base.minusDays(1).minusHours(2)
+                    .minusMinutes(3).minusSeconds(4);
+            assertEquals(new JobTimestamp("20230515_091506"), calc);
+        }
+
+### Getting the end of the month
+
+        @Test
+        public void test_endOfTheMonth() {
+            JobTimestamp base = new JobTimestamp("20230516_111810");
+            assertEquals(new JobTimestamp("20230531_235959"),
+                    base.endOfTheMonth());
+        }
+
+### Getting the beginning of the month
+
+        @Test
+        public void test_beginningOfTheMonth() {
+            JobTimestamp base = new JobTimestamp("20230516_111810");
+            assertEquals(new JobTimestamp("20230501_000000"),
+                    base.beginningOfTheMonth());
+        }
+
+### Getting the difference seconds between 2 JobTimestamp objects
+
+        @Test
+        public void test_betweenSeconds() {
+            JobTimestamp jt1 = new JobTimestamp("20230516_000000");
+            JobTimestamp jt2 = new JobTimestamp("20230516_030405");
+            assertEquals(3 * 60 * 60 + 4 * 60 + 5,
+                    JobTimestamp.betweenSeconds(jt1, jt2));
+        }
+
+### Creating a JobTimestamp later than the given base JobTimestamp
+
+        @Test
+        public void test_laterThan() {
+            JobTimestamp base = JobTimestamp.now();
+            JobTimestamp jt1 = JobTimestamp.laterThan(base);
+            JobTimestamp jt2 = JobTimestamp.laterThan(base, jt1);
+            System.out.println(String.format("base=%s, jt1=%s, jt2=%s",
+                    base.toString(), jt1.toString(), jt2.toString()));
+        }
+
+### Compare a JobTimestamp against a base JobTimestamp to find one newer than the base
+
+        @Test
+        public void test_theTimeOrLaterThan() {
+            JobTimestamp thanThis = new JobTimestamp("20230516_010101");
+            JobTimestamp theTime  = new JobTimestamp("20230516_010102");
+            assertEquals(theTime,
+                    JobTimestamp.theTimeOrLaterThan(thanThis, theTime));
+            //
+            thanThis = new JobTimestamp("20230516_010102");
+            theTime  = new JobTimestamp("20230516_010101");
+            assertEquals(new JobTimestamp("20230516_010103"),
+                    JobTimestamp.theTimeOrLaterThan(thanThis, theTime));
         }

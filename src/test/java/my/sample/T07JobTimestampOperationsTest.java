@@ -39,25 +39,28 @@ public class T07JobTimestampOperationsTest {
     }
 
     @Test
-    public void test_laterThan() {
-        JobTimestamp base = JobTimestamp.now();
-        JobTimestamp jt1 = JobTimestamp.laterThan(base);
-        JobTimestamp jt2 = JobTimestamp.laterThan(base, jt1);
-        System.out.println(String.format("base=%s, jt1=%s, jt2=%s",
-                base.toString(), jt1.toString(), jt2.toString()));
+    public void test_isValid() {
+        assertTrue(JobTimestamp.isValid("20230516_030405"));
+        assertFalse(JobTimestamp.isValid("this is not a valid JobTimestamp"));
     }
 
     @Test
-    public void test_theTimeOrLaterThan() {
-        JobTimestamp thanThis = new JobTimestamp("20230516_010101");
-        JobTimestamp theTime  = new JobTimestamp("20230516_010102");
-        assertEquals(theTime,
-                JobTimestamp.theTimeOrLaterThan(thanThis, theTime));
-        //
-        thanThis = new JobTimestamp("20230516_010102");
-        theTime  = new JobTimestamp("20230516_010101");
-        assertEquals(new JobTimestamp("20230516_010103"),
-                JobTimestamp.theTimeOrLaterThan(thanThis, theTime));
+    public void test_equals() {
+        JobTimestamp jt1 = new JobTimestamp("20230516_000000");
+        JobTimestamp jt2 = new JobTimestamp("20230516_030405");
+        JobTimestamp jt3 = new JobTimestamp("20230516_030405");
+        assertFalse(jt1.equals(jt2));
+        assertTrue(jt2.equals(jt3));
+    }
+
+    @Test
+    public void test_compareTo() {
+        JobTimestamp jt1 = new JobTimestamp("20230516_000000");
+        JobTimestamp jt2 = new JobTimestamp("20230516_030405");
+        JobTimestamp jt3 = new JobTimestamp("20230516_030405");
+        assertTrue(jt1.compareTo(jt2) < 0);
+        assertTrue(jt2.compareTo(jt3) == 0);
+        assertTrue(jt2.compareTo(jt1) > 0);
     }
 
     @Test
@@ -106,28 +109,27 @@ public class T07JobTimestampOperationsTest {
                 JobTimestamp.betweenSeconds(jt1, jt2));
     }
 
+
     @Test
-    public void test_equals() {
-        JobTimestamp jt1 = new JobTimestamp("20230516_000000");
-        JobTimestamp jt2 = new JobTimestamp("20230516_030405");
-        JobTimestamp jt3 = new JobTimestamp("20230516_030405");
-        assertFalse(jt1.equals(jt2));
-        assertTrue(jt2.equals(jt3));
+    public void test_laterThan() {
+        JobTimestamp base = JobTimestamp.now();
+        JobTimestamp jt1 = JobTimestamp.laterThan(base);
+        JobTimestamp jt2 = JobTimestamp.laterThan(base, jt1);
+        System.out.println(String.format("base=%s, jt1=%s, jt2=%s",
+                base.toString(), jt1.toString(), jt2.toString()));
     }
 
     @Test
-    public void test_compareTo() {
-        JobTimestamp jt1 = new JobTimestamp("20230516_000000");
-        JobTimestamp jt2 = new JobTimestamp("20230516_030405");
-        JobTimestamp jt3 = new JobTimestamp("20230516_030405");
-        assertTrue(jt1.compareTo(jt2) < 0);
-        assertTrue(jt2.compareTo(jt3) == 0);
-        assertTrue(jt2.compareTo(jt1) > 0);
+    public void test_theTimeOrLaterThan() {
+        JobTimestamp thanThis = new JobTimestamp("20230516_010101");
+        JobTimestamp theTime  = new JobTimestamp("20230516_010102");
+        assertEquals(theTime,
+                JobTimestamp.theTimeOrLaterThan(thanThis, theTime));
+        //
+        thanThis = new JobTimestamp("20230516_010102");
+        theTime  = new JobTimestamp("20230516_010101");
+        assertEquals(new JobTimestamp("20230516_010103"),
+                JobTimestamp.theTimeOrLaterThan(thanThis, theTime));
     }
 
-    @Test
-    public void test_isValid() {
-        assertTrue(JobTimestamp.isValid("20230516_030405"));
-        assertFalse(JobTimestamp.isValid("this is not a valid JobTimestamp"));
-    }
 }
