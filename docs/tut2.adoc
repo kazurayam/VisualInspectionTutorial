@@ -30,7 +30,7 @@ include::../src/test/java/my/sample/SharedMethods.java[lines=26..44]
 
 The statement (12) invokes `store.write()` method, which create a new file tree, as this:
 
-image::../images/tutorial/07_writing_image_with_metadata.png[]
+image::https://kazurayam.github.io/materialstore-tutorial/images/tutorial/07_writing_image_with_metadata.png[]
 
 === Metadata attributes based on key-value pairs explicitly specified, plus attributes based on a URL
 
@@ -100,3 +100,4 @@ You can also get various information out of the `material` variable. For example
 ----
 
 Please check the link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Material.html[Javadoc of Material] for what sort of accessor methods are implemented.
+

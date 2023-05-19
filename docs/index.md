@@ -17,17 +17,21 @@
         -   [Order of key-value pairs in Metadata](#order-of-key-value-pairs-in-metadata)
         -   [key:value pairs explicitly specified](#keyvalue-pairs-explicitly-specified)
         -   [Retrieving information of a Material](#retrieving-information-of-a-material)
+    -   [3rd example: writing multiple Materials](#3rd-example-writing-multiple-materials)
         -   [Metadata.Builder.put(String key, String value)](#metadata-builder-putstring-key-string-value)
         -   [Metadata.Builder.putAll(Map&lt;String,String&gt;)](#metadata-builder-putallmapstringstring)
         -   [Metadata.Builder.exclude(String keys…​)](#metadata-builder-excludestring-keys)
         -   [Sorting the "index" file](#sorting-the-index-file)
+    -   [4th example : retrieving a single Materials from the store](#4th-example-retrieving-a-single-materials-from-the-store)
+    -   [5th example : Selecting a MaterialList](#5th-example-selecting-a-materiallist)
         -   [Sorting the entries by SortKeys](#sorting-the-entries-by-sortkeys)
+    -   [6th example : generate a HTML report of a MaterialList](#6th-example-generate-a-html-report-of-a-materiallist)
 
 # Materialstore Tutorial
 
--   [API javadoc](https://kazurayam.github.io/materialstore/api/index.html)
+-   [materialstore API javadoc](https://kazurayam.github.io/materialstore/api/index.html)
 
--   back to the [repository](https://github.com/kazurayam/materialstore)
+-   back to the [materialstore repository](https://github.com/kazurayam/materialstore)
 
 This is an introduction to a Java library named `materialstore` that I (kazurayam) developed.
 
@@ -511,7 +515,7 @@ The `downloadURL(URL)` method of `SharedMethods` class implements this processin
 The statement (12) invokes `store.write()` method, which create a new file tree, as this:
 
 <figure>
-<img src="../images/tutorial/07_writing_image_with_metadata.png" alt="07 writing image with metadata" />
+<img src="https://kazurayam.github.io/materialstore-tutorial/images/tutorial/07_writing_image_with_metadata.png" alt="07 writing image with metadata" />
 </figure>
 
 ### Metadata attributes based on key-value pairs explicitly specified, plus attributes based on a URL
@@ -566,7 +570,8 @@ You can also get various information out of the `material` variable. For example
                     material.getMetadata().get("URL.host"));        // (15)
 
 Please check the [Javadoc of Material](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Material.html) for what sort of accessor methods are implemented.
-== 3rd example: writing multiple Materials
+
+## 3rd example: writing multiple Materials
 
 We are going to read the code of
 
@@ -737,7 +742,8 @@ The primary sorting key is the entire String representation of Metadata.
 3.  `{"label":"red apple", …​`
 
 As you seem the strings are sorted in the ascending order: `mi` &lt; `mo` &lt; `re`.
-== 4th example : retrieving a single Materials from the store
+
+## 4th example : retrieving a single Materials from the store
 
 We are going to read the code of
 
@@ -785,9 +791,8 @@ For detail, have a look at javadocs:
 -   [com.kazurayam.materialstore.core.Metadata](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Metadata.html)
 
 -   [com.kazurayam.materialstore.core.QueryOnMetadata](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/QueryOnMetadata.html)
-    == 5th example : Selecting a MaterialList
 
-<!-- -->
+## 5th example : Selecting a MaterialList
 
     package my.sample;
 
@@ -840,7 +845,8 @@ For detail, have a look at javadocs:
 ### Sorting the entries by SortKeys
 
 I want to sort the entries in the `index` so that the entry with `"step": "01"` comes first, the entry with `"step": "02"` second, and the entry with `"step": "03"` third.
-== 6th example : generate a HTML report of a MaterialList
+
+## 6th example : generate a HTML report of a MaterialList
 
         private Store store;
         @BeforeEach
