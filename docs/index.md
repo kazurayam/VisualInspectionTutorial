@@ -29,6 +29,10 @@
         -   [Selecting Materials with QueryOnMetadata specified with exact match](#selecting-materials-with-queryonmetadata-specified-with-exact-match)
         -   [Selecting Materials using Regular Expression](#selecting-materials-using-regular-expression)
     -   [6th example: generate an HTML report of a MaterialList](#6th-example-generate-an-html-report-of-a-materiallist)
+    -   [7th example: various JobTimestamp operations](#7th-example-various-jobtimestamp-operations)
+        -   [Constructing a JobTimestamp that represents the current timestamp](#constructing-a-jobtimestamp-that-represents-the-current-timestamp)
+        -   [Constructing a JobTimestamp with String argument](#constructing-a-jobtimestamp-with-string-argument)
+        -   [Constructing a JobTimestamp with LocalDateTime argument](#constructing-a-jobtimestamp-with-localdatetime-argument)
 
 # Materialstore Tutorial
 
@@ -946,4 +950,69 @@ You can click one of the rows to open it. When opened, you can see the PNG image
 <img src="https://kazurayam.github.io/materialstore-tutorial/images/tutorial//10_MaterialListReport_apple.png" alt="10 MaterialListReport apple" />
 </figure>
 
-The report HTML file is created immediately under the `store` directory, and the file name will be in the format of `store/<JobName>-<JobTimestamp>.html`. The location and the file name is fixed. You should not try to change it; you would not need to do so.
+The location and the name of the report HTML is fixed. The report HTML file will be located immediately under the `store` directory. The file name will be in the format of `store/<JobName>-<JobTimestamp>.html`.
+
+## 7th example: various JobTimestamp operations
+
+We are going to read the code of
+
+-   [my.sample.T07JobTimestampOperationsTest](https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T07JobTimestampOperationsTest.java)
+
+The `store` directory has a unified format of sub-directories like this:
+
+    $ tree -L 4 .
+    .
+    └── store
+        ├── test05_select_lest_of_materials
+        │   └── 20230519_143612
+        │       ├── index
+        │       └── objects
+        ├── test05_select_with_Regex
+        │   ├── 20230519_164822
+        │   │   ├── index
+        │   │   └── objects
+        │   └── 20230519_164834
+        │       ├── index
+        │       └── objects
+        └── test05_select_with_RegularExpression
+            └── 20230519_150156
+                ├── index
+                └── objects
+
+The tree has a fixed subdirectory structure:
+
+-   `store/<JobName>/<JobTimestamp>/index`
+
+-   `store/<JobName>/<JobTimestamp>/objects`
+
+This directory structure is convenient to store the web resources (screenshot images, etc) downloaded from the remote services during our automated Web UI tests.
+
+The `<JobName>` directory will be the top level classification of the downloaded resources. Obviously the `<JobName>` directory will represent which set of test scripts created it. And `<JobTimestamp>` directory will represent the timing when we execute the test.
+
+The `com.kazurayam.materialstore.core.JobTimestamp` class implements a rich set of methods to create/modify/inspect instances. Let me cover them with sample codes.
+
+### Constructing a JobTimestamp that represents the current timestamp
+
+        @Test
+        public void test_now() {
+            JobTimestamp now = JobTimestamp.now();
+            System.out.println("now=" + now.toString());
+        }
+
+### Constructing a JobTimestamp with String argument
+
+        @Test
+        public void test_constructor_from_string() {
+            String ts = "20230519_204902";
+            JobTimestamp jt = new JobTimestamp(ts);
+            assertEquals(ts, jt.toString());
+        }
+
+### Constructing a JobTimestamp with LocalDateTime argument
+
+        @Test
+        public void test_constructor_from_LocalDateTime() {
+            LocalDateTime now = LocalDateTime.now();
+            JobTimestamp jt = JobTimestamp.create(now);
+            System.out.println("jt=" + jt.toString());
+        }
