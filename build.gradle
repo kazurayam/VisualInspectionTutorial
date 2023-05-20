@@ -12,7 +12,8 @@ repositories {
 
 dependencies {
     testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.5'
-    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+    testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+    testImplementation group: 'commons-io', name: 'commons-io', version: '2.12.0'
     testImplementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'

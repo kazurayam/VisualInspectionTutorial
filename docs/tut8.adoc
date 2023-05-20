@@ -1,4 +1,6 @@
-== 8th example: Image Diff, Text Diff
+== 8th example: Store class basics
 
-TO AUTHOR YET
+link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/SharedMethods.java[source of my.sample.SharedMethods]
+
+
 
