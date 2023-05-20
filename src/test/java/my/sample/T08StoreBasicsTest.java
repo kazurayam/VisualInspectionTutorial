@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class T08StoreBasics {
+public class T08StoreBasicsTest {
 
     private static Path projectDir;
     private static Path outputDir;
@@ -40,7 +40,7 @@ public class T08StoreBasics {
     public static void beforeAll() throws IOException {
         projectDir = Paths.get(".").toAbsolutePath();
         outputDir = projectDir.resolve("build/tmp/testOutput")
-                .resolve(T08StoreBasics.class.getName());
+                .resolve(T08StoreBasicsTest.class.getName());
         if (Files.exists(outputDir)) {
             FileUtils.deleteDirectory(outputDir.toFile());
         }
@@ -82,6 +82,7 @@ public class T08StoreBasics {
         JobTimestamp jobTimestamp = JobTimestamp.now();
         Metadata metadata = Metadata.builder(url).build();
         Material m = store.write(jobName, jobTimestamp, FileType.PNG, metadata, bytes);
+
         // read all bytes from the Material
         byte[] content = store.read(m);
         assertTrue(content.length > 0);
