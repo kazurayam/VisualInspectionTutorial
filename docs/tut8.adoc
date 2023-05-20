@@ -2,11 +2,11 @@
 
 We will read the code of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T08StoreBasics.java[my.sample.T08StoreBasic]
 
-The link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html[com.kazurayam.materialstore.core.Store] class create the `store` directory and the directory structure under it. The class implements methods to operate the `store` --- write a byte array into the store to make it a Material; read the byte array from a Material; list the JobNames contained, list the JobTimestamps contained, list the Materials contained. copy the Materials; delete the Materials, the JobTimestamp directory and the JobName directory. Have a quick look at the sample codes that utilize the `Store` class. Then you will understand it is a convenient helper dedicated to manage the web resources (page screenshots, HTML, JSON and XML text, etc) downloaded from the web services.
+The link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html[com.kazurayam.materialstore.core.Store] class create the `store` directory and the directory structure under it. The class implements methods to operate the `store` --- write a byte array into the store to make it a Material; read the byte array from a Material; list the JobNames contained, list the JobTimestamps contained, list the Materials contained. copy the Materials; delete the Materials, the JobTimestamp directory and the JobName directory. Have a quick look at the sample codes that utilize the `Store` class. Then you will understand it is a convenient helper dedicated to manage the web resources (page screenshots, HTML, JSON and XML text and so on) downloaded from the web services.
 
 === Create a directory tree under the store to write a Material
 
-The following code shows how to create a "store" directory, a directory tree with JobName and JobTimestamu under the "store", and write a Material.
+The following code shows how to create a "store" directory, a directory tree with JobName and JobTimestamp under the "store", and write a Material.
 
 [source]
 ----
@@ -31,8 +31,8 @@ build/tmp/testOutput/my.sample.T08StoreBasicsTest/
 
 In the above tree, you can find some variable parts and fixed parts:
 
-- *store*`/`*JobName*`/`*JobTimestamp*`/index`
-- *store*`/`*JobName*`/`*JobTimestamp*`/objects/`*40 hex-decimal character*`.`*extension*
+- *store* `/` *JobName* `/` *JobTimestamp* `/index`
+- *store* `/` *JobName* `/` *JobTimestamp* `/objects/` *40 hex-decimal character* `.` *extension*
 
 The top directory can have any name, but I usually name it `store`.
 
@@ -40,13 +40,13 @@ The file name `index` is fixed. The `index` file is created by the `store` objec
 
 The *JobName* can be any name, but there are a few characters that are not allowed as file name by OS. For example, a slash `/` is not allowed.
 
-The *JobTimestamp* is a string of fix 15 characters: 4 digits as Year ('2023', etc), 2 digits as Month (`01`-`12`), 2 digits as Day (`01`-`31`), an under bar `_`, 2 digits as Hours (`00`- `23`), 2 digits as Minutes (`00`-`59`), 2 digits as Seconds (`00`-`59`). Exceptionally, *JobTimestamp* can be a single under bar character `_`, which means the "unspecified".
+The *JobTimestamp* is a string of fix 15 characters: 4 digits as Year (e.g, `2023`), 2 digits as Month (`01`-`12`), 2 digits as Day (`01`-`31`), an under bar `_`, 2 digits as Hours (`00`- `23`), 2 digits as Minutes (`00`-`59`), 2 digits as Seconds (`00`-`59`). Exceptionally, *JobTimestamp* can be a single under bar character ( _ ), which means the "unspecified".
 
 The directory name `objects` is fixed. Under the `objects`
 
-The name of the files under the `objects` directory is a concatination of 40 hex-decimal characters derived from the content by SHA1 Message signagure algorithm appended with `.` and the *extension*.
+The name of the files under the `objects` directory is a concatenation of 40 hex-decimal characters derived from the content by SHA1 Message signature algorithm appended with `.` and the *extension*.
 
-The *extension* is something you all know: `txt`, `png`, `jpg`, `json`, `html`, `css`, `html`, `json`, `xml`, etc. The link:https://github.com/kazurayam/materialstore/blob/develop/src/main/java/com/kazurayam/materialstore/core/FileType.java[`com.kazurayam.materialstore.core.FileSystem`] defines the supported extensions. The *extesion* makes it possible to open each files by a double click action in the Windows Explorer GUI.
+The *extension* is something you all know: `txt`, `png`, `jpg`, `json`, `html`, `css`, `html`, `json`, `xml`, etc. The link:https://github.com/kazurayam/materialstore/blob/develop/src/main/java/com/kazurayam/materialstore/core/FileType.java[`com.kazurayam.materialstore.core.FileSystem`] defines the supported extensions. The *extension* makes it possible to open each files by a double click action in the Windows Explorer GUI.
 
 The *store* directory may contain multiple *JobName* directories. A *JobName* directory may contain multiple *JobTimestamp* directories. A *JobTimestamp* will contain a single `index` file. An `objects` directory may contain multiple files.
 
