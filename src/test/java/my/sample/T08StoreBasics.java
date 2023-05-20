@@ -1,5 +1,6 @@
 package my.sample;
 
+import com.kazurayam.materialstore.core.DuplicatingMaterialException;
 import com.kazurayam.materialstore.core.FileType;
 import com.kazurayam.materialstore.core.JobName;
 import com.kazurayam.materialstore.core.JobTimestamp;
@@ -7,6 +8,7 @@ import com.kazurayam.materialstore.core.Material;
 import com.kazurayam.materialstore.core.MaterialList;
 import com.kazurayam.materialstore.core.MaterialstoreException;
 import com.kazurayam.materialstore.core.Metadata;
+import com.kazurayam.materialstore.core.QueryOnMetadata;
 import com.kazurayam.materialstore.core.Store;
 import com.kazurayam.materialstore.core.Stores;
 import org.apache.commons.io.FileUtils;
@@ -29,13 +31,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class T08StoreBasics {
 
+    private static Path projectDir;
     private static Path outputDir;
     private Path root;
     private Store store;
 
     @BeforeAll
     public static void beforeAll() throws IOException {
-        outputDir = Paths.get("./").resolve("build/tmp/testOutput")
+        projectDir = Paths.get(".").toAbsolutePath();
+        outputDir = projectDir.resolve("build/tmp/testOutput")
                 .resolve(T08StoreBasics.class.getName());
         if (Files.exists(outputDir)) {
             FileUtils.deleteDirectory(outputDir.toFile());
@@ -67,6 +71,32 @@ public class T08StoreBasics {
                 m.getID(),
                 m.getFileType().getExtension(),
                 m.getMetadata().getMetadataIdentification().getIdentification()));
+    }
+
+    @Test
+    public void test_read_bytes_from_Material() throws MaterialstoreException {
+        URL url = SharedMethods.createURL(
+                "https://kazurayam.github.io/materialstore-tutorial/images/tutorial/03_apple.png");
+        byte[] bytes = SharedMethods.downloadUrlToByteArray(url);
+        JobName jobName = new JobName("test_read_bytes_from_Material");
+        JobTimestamp jobTimestamp = JobTimestamp.now();
+        Metadata metadata = Metadata.builder(url).build();
+        Material m = store.write(jobName, jobTimestamp, FileType.PNG, metadata, bytes);
+        // read all bytes from the Material
+        byte[] content = store.read(m);
+        assertTrue(content.length > 0);
+    }
+
+    @Test
+    public void test_readAllLines_from_Material() throws MaterialstoreException {
+        JobName jobName = new JobName("test_readAllLines_from_Material");
+        JobTimestamp jobTimestamp = JobTimestamp.now();
+        Material m = store.write(jobName, jobTimestamp, FileType.TXT,
+                Metadata.NULL_OBJECT, "aaa\nbbb\nccc\n");
+        List<String> lines = store.readAllLines(m);
+        for (String line : lines) {
+            System.out.println(line);
+        }
     }
 
     @Test
@@ -147,6 +177,22 @@ public class T08StoreBasics {
         assertEquals(3, materialList.size());
     }
 
+    public void test_retrieve() throws MaterialstoreException {
+        // create test fixtures
+        JobName jobName = new JobName("test_copyMaterials");
+        JobTimestamp jobTimestamp = JobTimestamp.now();
+        SharedMethods.write3images(store, jobName, jobTimestamp);
+        Material apple = store.selectSingle(jobName, jobTimestamp, FileType.PNG,
+                QueryOnMetadata.builder().put("label", "apple").build());
+        assertNotNull(apple);
+        //
+        Path outFile = Paths.get(System.getProperty("user.home"))
+                .resolve("tmp/retrieved.png");
+        store.retrieve(apple, outFile);
+        assertTrue(Files.exists(outFile));
+        assertTrue(outFile.toFile().length() > 0);
+    }
+
     @Test
     public void test_deleteJobTimestamp() throws MaterialstoreException {
         // create test fixtures
@@ -172,5 +218,103 @@ public class T08StoreBasics {
         store.deleteJobName(jobName);
         assertFalse(store.contains(jobName));
     }
+
+    @Test
+    public void test_unable_to_write_material_with_duplicating_Metadata()
+            throws MalformedURLException, MaterialstoreException {
+        // create test fixtures
+        JobName jobName = new JobName("test_unable_to_write_material_with_duplicating_Metadata");
+        JobTimestamp jobTimestamp = JobTimestamp.now();
+        URL url = new URL("https://github.com/kazurayam/materialstore-tutorial");
+        Metadata metadata = Metadata.builder(url).put("foo", "bar").build();
+        Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
+                metadata, "Hello, Materialstore!");
+        try {
+            // this code will cause a DuplicatingMaterialException to be raised
+            // as you can not write a Material with a duplicating combination of
+            // FileType + Metadata
+            byte[] bytes = store.read(mt1);
+            Material mt2 = store.write(jobName, jobTimestamp, FileType.TXT,
+                    metadata, bytes);
+
+            throw new RuntimeException("expected to raise a DuplicatingMaterialException, but not");
+        } catch (DuplicatingMaterialException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test_able_to_write_materials_with_same_ID_unique_Metadata()
+            throws MalformedURLException, MaterialstoreException {
+        // create test fixtures
+        JobName jobName =
+                new JobName("test_able_to_write_materials_with_same_ID_unique_Metadata");
+        JobTimestamp jobTimestamp = JobTimestamp.now();
+        URL url = new URL("https://github.com/kazurayam/materialstore-tutorial");
+        //
+        Metadata metadata1 = Metadata.builder(url).put("step", "01").build();
+        Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
+                metadata1, "Hello, Materialstore!");
+        Metadata metadata2 = Metadata.builder(url).put("step", "02").build();
+
+        // write one more Material with the same ID but with unique Metadata
+        byte[] bytes = store.read(mt1);
+        Material mt2 = store.write(jobName, jobTimestamp, FileType.TXT,
+                metadata2, bytes);
+        MaterialList materialList = store.select(jobName, jobTimestamp);
+
+        // make sure there are 2 Materials writen
+        assertEquals(2, materialList.size());
+        for (Material m : materialList) {
+            System.out.printf("%s\t%s\t%s\n",
+                    m.getID().toString(),
+                    m.getFileType().getExtension(),
+                    m.getMetadata().getMetadataIdentification().toString());
+        }
+    }
+
+    @Test
+    public void test_getRoot() {
+        Path storeDir = store.getRoot();
+        assertEquals("store", storeDir.getFileName().toString());
+        assertEquals(root, storeDir);
+    }
+
+    @Test
+    public void test_getPathOf() throws MalformedURLException, MaterialstoreException {
+        // create test fixtures
+        JobName jobName =
+                new JobName("test_getPathOf");
+        JobTimestamp jobTimestamp = JobTimestamp.now();
+        URL url = new URL("https://github.com/kazurayam/materialstore-tutorial");
+        Metadata metadata1 = Metadata.builder(url).put("step", "01").build();
+        Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
+                metadata1, "Hello, Materialstore!");
+
+        // test getting the Path of JobName directory
+        Path jobNamePath = store.getPathOf(jobName);
+        System.out.println("jobNamePath=" +
+                projectDir.relativize(jobNamePath).toString());
+        assertEquals(jobName.getJobName(), jobNamePath.getFileName().toString());
+
+        // test getting the Path of JobTimestamp directory
+        Path jobTimestampPath = store.getPathOf(jobName, jobTimestamp);
+        System.out.println("jobTimestampPath=" +
+                projectDir.relativize(jobTimestampPath).toString());
+        assertEquals(jobTimestamp.toString(), jobTimestampPath.getFileName().toString());
+
+        // test getting the Path of Material file
+        Path materialPath = store.getPathOf(mt1);
+        System.out.println("materialPath=" +
+                projectDir.relativize(materialPath).toString());
+        assertTrue(materialPath.getFileName().toString().startsWith(mt1.getID().toString()));
+
+        // test getting the Path of Material, a simpler way
+        Path materialPathAlt = mt1.toPath();
+        System.out.println("materialPathAlt=" +
+                projectDir.relativize(materialPathAlt).toString());
+        assertTrue(materialPathAlt.getFileName().toString().startsWith(mt1.getID().toString()));
+    }
+
 
 }
