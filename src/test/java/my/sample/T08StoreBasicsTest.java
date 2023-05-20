@@ -138,7 +138,7 @@ public class T08StoreBasicsTest {
     }
 
     @Test
-    public void test_findAllJobTimestampsPriorTo() throws MaterialstoreException, InterruptedException {
+    public void test_findAllJobTimestampsPriorTo() throws MaterialstoreException {
         // create test fixtures
         JobName jobName = new JobName("test_findAllJobTimestampsPriorTo");
         JobTimestamp jt = JobTimestamp.now();
@@ -316,6 +316,4 @@ public class T08StoreBasicsTest {
                 projectDir.relativize(materialPathAlt).toString());
         assertTrue(materialPathAlt.getFileName().toString().startsWith(mt1.getID().toString()));
     }
-
-
 }

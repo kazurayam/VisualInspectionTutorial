@@ -1,6 +1,6 @@
-== 8th example: Store class basics
+== 8th example: the Store class basics
 
-We will read the code of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T08StoreBasics.java[my.sample.T08StoreBasic]
+We will read the code of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T08StoreBasicsTest.java[my.sample.T08StoreBasicsTest]
 
 The link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html[com.kazurayam.materialstore.core.Store] class create the `store` directory and the directory structure under it. The class implements methods to operate the `store` --- write a byte array into the store to make it a Material; read the byte array from a Material; list the JobNames contained, list the JobTimestamps contained, list the Materials contained. copy the Materials; delete the Materials, the JobTimestamp directory and the JobName directory. Have a quick look at the sample codes that utilize the `Store` class. Then you will understand it is a convenient helper dedicated to manage the web resources (page screenshots, HTML, JSON and XML text and so on) downloaded from the web services.
 
@@ -36,7 +36,7 @@ In the above tree, you can find some variable parts and fixed parts:
 
 The top directory can have any name, but I usually name it `store`.
 
-The file name `index` is fixed. The `index` file is created by the `store` object. Programmers are not supposed to operate on it directly.
+The file name `index` is fixed. The `index` file is created by the Store object. Programmers are not supposed to change it directly.
 
 The *JobName* can be any name, but there are a few characters that are not allowed as file name by OS. For example, a slash `/` is not allowed.
 
@@ -58,3 +58,69 @@ You can read the content of a Material as file by calling `Store.read(Material)`
 ----
 include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=76..89]
 ----
+
+=== Reading all lines of a Material as text
+
+Provided that a Material is a text file, you can read all lines into a `List<String>` by `Store.reaAllLines(Material)`. 
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=91..101]
+----
+
+If the Material is a binary file (not a text file) then a MaterialstoreException which wraps an IOException will be raised.
+
+=== Listing all JobNames in a Store
+
+Under a `store` directory, there could be zero or more *JobName* directories. Then you would naturally want to get a list of the *JobNames*. You can get it by calling `store.findAllJobNames()`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=103..114]
+----
+
+You would see, for example, the following output in the console:
+
+[source]
+----
+> Task :test
+test_findAllJobNames
+BUILD SUCCESSFUL in 2s
+----
+
+=== Listing all JobTimestamps in a JobName directory
+
+Under a *JobName* directory, there could be zero or more *JobTimestamp* directories. Then you would naturally want to get a list of the *JobTimestamps*. You can get it by calling `store.findAllJobTimestamps()`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=116..127]
+----
+
+You would see, for example, the following output in the console:
+
+[source]
+----
+> Task :test
+20230521_072016
+BUILD SUCCESSFUL in 2s
+----
+
+=== Finding the latest JobTimestamps in a JobName directory
+
+Under a *JobName* directory, there could be multiple *JobTimestamp* directories. The name of *JobTimestamp* directories are moving as time goes by. Then you would naturally want a way to find the latest (newest)*JobTimestamp* in a *JobName*. You can get it by calling `store.findLatestJobTimestamps()`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=129..138]
+----
+
+=== Finding JobTimestamps prior to the specified JobTimestamp
+
+You can find a subset of *JobTimestamps* under a *JobName* prior to a specific JobTimestamp value by calling `store.findAllJobTimestampsPriorTo(JobName jobName, JobTimestamp priorTo)`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=140..152]
+----
+

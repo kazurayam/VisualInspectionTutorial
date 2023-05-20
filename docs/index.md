@@ -45,9 +45,14 @@
         -   [Getting the difference seconds between 2 JobTimestamp objects](#getting-the-difference-seconds-between-2-jobtimestamp-objects)
         -   [Creating a JobTimestamp later than the given base JobTimestamp](#creating-a-jobtimestamp-later-than-the-given-base-jobtimestamp)
         -   [Compare a JobTimestamp against a base JobTimestamp to find one newer than the base](#compare-a-jobtimestamp-against-a-base-jobtimestamp-to-find-one-newer-than-the-base)
-    -   [8th example: Store class basics](#8th-example-store-class-basics)
+    -   [8th example: the Store class basics](#8th-example-the-store-class-basics)
         -   [Create a directory tree under the store to write a Material](#create-a-directory-tree-under-the-store-to-write-a-material)
         -   [Read the content of a single Material as a byte\[\]](#_read_the_content_of_a_single_material_as_a_byte)
+        -   [Reading all lines of a Material as text](#reading-all-lines-of-a-material-as-text)
+        -   [Listing all JobNames in a Store](#listing-all-jobnames-in-a-store)
+        -   [Listing all JobTimestamps in a JobName directory](#listing-all-jobtimestamps-in-a-jobname-directory)
+        -   [Finding the latest JobTimestamps in a JobName directory](#finding-the-latest-jobtimestamps-in-a-jobname-directory)
+        -   [Finding JobTimestamps prior to the specified JobTimestamp](#finding-jobtimestamps-prior-to-the-specified-jobtimestamp)
 
 # Materialstore Tutorial
 
@@ -1156,9 +1161,9 @@ The `com.kazurayam.materialstore.core.JobTimestamp` class implements a rich set 
                     JobTimestamp.theTimeOrLaterThan(thanThis, theTime));
         }
 
-## 8th example: Store class basics
+## 8th example: the Store class basics
 
-We will read the code of [my.sample.T08StoreBasic](https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T08StoreBasics.java)
+We will read the code of [my.sample.T08StoreBasicsTest](https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T08StoreBasicsTest.java)
 
 The [com.kazurayam.materialstore.core.Store](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html) class create the `store` directory and the directory structure under it. The class implements methods to operate the `store` --- write a byte array into the store to make it a Material; read the byte array from a Material; list the JobNames contained, list the JobTimestamps contained, list the Materials contained. copy the Materials; delete the Materials, the JobTimestamp directory and the JobName directory. Have a quick look at the sample codes that utilize the `Store` class. Then you will understand it is a convenient helper dedicated to manage the web resources (page screenshots, HTML, JSON and XML text and so on) downloaded from the web services.
 
@@ -1262,7 +1267,7 @@ In the above tree, you can find some variable parts and fixed parts:
 
 The top directory can have any name, but I usually name it `store`.
 
-The file name `index` is fixed. The `index` file is created by the `store` object. Programmers are not supposed to operate on it directly.
+The file name `index` is fixed. The `index` file is created by the Store object. Programmers are not supposed to change it directly.
 
 The **JobName** can be any name, but there are a few characters that are not allowed as file name by OS. For example, a slash `/` is not allowed.
 
@@ -1293,4 +1298,101 @@ You can read the content of a Material as file by calling `Store.read(Material)`
             // read all bytes from the Material
             byte[] content = store.read(m);
             assertTrue(content.length > 0);
+        }
+
+### Reading all lines of a Material as text
+
+Provided that a Material is a text file, you can read all lines into a `List<String>` by `Store.reaAllLines(Material)`.
+
+        @Test
+        public void test_readAllLines_from_Material() throws MaterialstoreException {
+            JobName jobName = new JobName("test_readAllLines_from_Material");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            Material m = store.write(jobName, jobTimestamp, FileType.TXT,
+                    Metadata.NULL_OBJECT, "aaa\nbbb\nccc\n");
+            List<String> lines = store.readAllLines(m);
+            for (String line : lines) {
+                System.out.println(line);
+            }
+        }
+
+If the Material is a binary file (not a text file) then a MaterialstoreException which wraps an IOException will be raised.
+
+### Listing all JobNames in a Store
+
+Under a `store` directory, there could be zero or more **JobName** directories. Then you would naturally want to get a list of the **JobNames**. You can get it by calling `store.findAllJobNames()`.
+
+        @Test
+        public void test_findAllJobNames() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_findAllJobNames");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);
+            // list all JobNames in the store
+            List<JobName> allJobNames = store.findAllJobNames();
+            for (JobName jn : allJobNames) {
+                System.out.println(jn.toString());
+            }
+        }
+
+You would see, for example, the following output in the console:
+
+    > Task :test
+    test_findAllJobNames
+    BUILD SUCCESSFUL in 2s
+
+### Listing all JobTimestamps in a JobName directory
+
+Under a **JobName** directory, there could be zero or more **JobTimestamp** directories. Then you would naturally want to get a list of the **JobTimestamps**. You can get it by calling `store.findAllJobTimestamps()`.
+
+        @Test
+        public void test_findAllJobTimestamps() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_findAllJobTimestamps");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);
+            // list all JobTimestamps in the store/JobName
+            List<JobTimestamp> allJobTimestamps = store.findAllJobTimestamps(jobName);
+            for (JobTimestamp jt : allJobTimestamps) {
+                System.out.println(jt.toString());
+            }
+        }
+
+You would see, for example, the following output in the console:
+
+    > Task :test
+    20230521_072016
+    BUILD SUCCESSFUL in 2s
+
+### Finding the latest JobTimestamps in a JobName directory
+
+Under a **JobName** directory, there could be multiple **JobTimestamp** directories. The name of **JobTimestamp** directories are moving as time goes by. Then you would naturally want a way to find the latest (newest)**JobTimestamp** in a **JobName**. You can get it by calling `store.findLatestJobTimestamps()`.
+
+        @Test
+        public void test_findLatestJobTimestamp() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_findLatestJobTimestamp");
+            JobTimestamp jt = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jt);
+            // find the latest JobTimestamp in the store/JobName
+            JobTimestamp latest = store.findLatestJobTimestamp(jobName);
+            assertEquals(jt, latest);
+        }
+
+### Finding JobTimestamps prior to the specified JobTimestamp
+
+You can find a subset of **JobTimestamps** under a **JobName** prior to a specific JobTimestamp value by calling `store.findAllJobTimestampsPriorTo(JobName jobName, JobTimestamp priorTo)`.
+
+        @Test
+        public void test_findAllJobTimestampsPriorTo() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_findAllJobTimestampsPriorTo");
+            JobTimestamp jt = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jt);
+            // list all JobTimestamps in the store/JobName prior to a certain timing
+            List<JobTimestamp> jtList =
+                    store.findAllJobTimestampsPriorTo(jobName, jt);
+            assertEquals(0, jtList.size());
+            jtList = store.findAllJobTimestampsPriorTo(jobName, JobTimestamp.laterThan(jt));
+            assertEquals(1, jtList.size());
         }
