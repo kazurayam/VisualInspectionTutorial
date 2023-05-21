@@ -1573,6 +1573,20 @@ However, in a single JobTimestamp, you can create another Material of duplicatin
             }
         }
 
+When I ran this test, I got the following result.
+
+<figure>
+<img src="images/tutorial/11_multipe_Materials_with_same_ID_unique_Metadata.png" alt="11 multipe Materials with same ID unique Metadata" />
+</figure>
+
+Please note the following 2 points:
+
+1.  The `index` file contains 2 lines. This means that this **JobTimestamp** contains 2 Material objects. But the `objects` directory contains only 1 file.
+
+2.  The 2 Material objects in this JobTimestamp has just the same content; therefore the ID and the FileType would be the same.
+
+3.  The 2 lines in the `index` file shares the same ID and the same FileType, but have unique Metadata : the 1st line has `"store":"01"`, the 2nd line has `"store":"02"`. Because the Metadata is unique, 2 Material objects are safely stored in the JobTimestamp directory. This resulted 2 lines in the `index` file, but 1 file in the `object` directory.
+
 ### Getting the Path on which the Store is constructed
 
 When you construct an instance of `com.kazurayam.materialstore.core.Store` class, you need to specify an instance of `java.nio.file.Path` as argument. Obviously, you can retrieve the Path out of the Store instance by calling `store.getRoot()`.
@@ -1583,20 +1597,6 @@ When you construct an instance of `com.kazurayam.materialstore.core.Store` class
             assertEquals("store", storeDir.getFileName().toString());
             assertEquals(root, storeDir);
         }
-
-When I ran this test, I got the following result.
-
-<figure>
-<img src="images/tutorial/11_multipe_Materials_with_same_ID_unique_Metadata.png" alt="11 multipe Materials with same ID unique Metadata" />
-</figure>
-
-Please note the following 2 points:
-
-1.  The `index` file contains 2 lines. This means that this **JobTimestamp** contains 2 Material objects.
-
-2.  The `objects` directory contains only 1 file. The 2 Material objects in this JobTimestamp has just the same content; therefore the ID and the FileType would be the same.
-
-3.  The 2 lines in the `index` file shares the same ID and the same FileType, but have unique Metadata : the 1st line has `"store":"01"`, the 2nd line has `"store":"02"`. Because the Metadata is unique, 2 Material objects are safely stored in the JobTimestamp directory. This resulted 2 lines in the `index` file, but 1 file in the `object` directory.
 
 ### Getting the Path of JobName, of JobTimestamp, of Material
 
