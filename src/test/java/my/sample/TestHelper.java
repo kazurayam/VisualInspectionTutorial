@@ -1,11 +1,14 @@
 package my.sample;
 
+import com.kazurayam.inspectus.core.UncheckedInspectusException;
 import com.kazurayam.materialstore.util.CopyDir;
 import com.kazurayam.materialstore.util.DeleteDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,5 +84,13 @@ public class TestHelper {
             throw new RuntimeException(e);
         }
         return output;
+    }
+
+    public static URL makeURL(String urlStr) {
+        try {
+            return new URL(urlStr);
+        } catch (MalformedURLException e) {
+            throw new UncheckedInspectusException(e);
+        }
     }
 }

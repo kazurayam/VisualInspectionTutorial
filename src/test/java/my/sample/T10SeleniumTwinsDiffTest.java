@@ -44,7 +44,7 @@ import java.util.function.BiFunction;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class T09SeleniumTwinsDiffTest {
+public class T10SeleniumTwinsDiffTest {
 
     private static Path projectDir;
     private static Path outputDir;
@@ -58,7 +58,7 @@ public class T09SeleniumTwinsDiffTest {
     public static void beforeAll() throws IOException {
         projectDir = Paths.get(".").toAbsolutePath();
         outputDir = projectDir.resolve("build/tmp/testOutput")
-                .resolve(T09SeleniumTwinsDiffTest.class.getName());
+                .resolve(T10SeleniumTwinsDiffTest.class.getName());
         if (Files.exists(outputDir)) {
             FileUtils.deleteDirectory(outputDir.toFile());
         }
