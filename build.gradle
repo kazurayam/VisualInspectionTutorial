@@ -11,13 +11,20 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.6-SNAPSHOT'
+    implementation libs.inspectus
+    implementation libs.slf4j.api
+    implementation libs.selenium4
+
+    testImplementation libs.slf4j.simple
+    testImplementation libs.webdrivermanager
+    testImplementation libs.guava
+    testImplementation libs.commonsio
+    testImplementation libs.junit.jupiter.api
+    testRuntimeOnly libs.junit.jupiter.engine
+
+    //testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.6-SNAPSHOT'
     testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
     testImplementation group: 'commons-io', name: 'commons-io', version: '2.12.0'
-    testImplementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }
 
 test {

@@ -245,5 +245,5 @@ link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/c
 - link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#hasDifferentiatingIndexEntry(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp)[`hasDifferenciatingIndexEntry`]
 - link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#findJobTimestampsReferredBy(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp)[`reflect()`]
 
-These methods are used internally by the classes in the materialstore library. They encapsulate complicated details, so I would not cover them here in this tutorial document.
+These methods are used internally by the classes in the materialstore library. Also, these methods are used by the link:https://github.com/kazurayam/inspectus[`inspectus`] library in order to implement what I call **Visual Inspection** --- comparing 2 sets of Material to find differences. These methods encapsulate the complicated processing details; so I would not cover them here in this tutorial document.
 

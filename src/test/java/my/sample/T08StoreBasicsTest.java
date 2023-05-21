@@ -181,11 +181,11 @@ public class T08StoreBasicsTest {
     @Test
     public void test_retrieve() throws MaterialstoreException {
         // create test fixtures
-        JobName jobName = new JobName("test_copyMaterials");
+        JobName jobName = new JobName("test_retrieve");
         JobTimestamp jobTimestamp = JobTimestamp.now();
         SharedMethods.write3images(store, jobName, jobTimestamp);
         Material apple = store.selectSingle(jobName, jobTimestamp, FileType.PNG,
-                QueryOnMetadata.builder().put("label", "apple").build());
+                QueryOnMetadata.builder().put("label", "red apple").build());
         assertNotNull(apple);
         //
         Path outFile = Paths.get(System.getProperty("user.home"))
