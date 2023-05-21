@@ -11,10 +11,10 @@ repositories {
 }
 
 dependencies {
-    implementation libs.inspectus
-    implementation libs.slf4j.api
-    implementation libs.selenium4
-
+    testImplementation libs.inspectus
+    testImplementation libs.slf4j.api
+    testImplementation libs.selenium4
+    testImplementation libs.ashotwrapper
     testImplementation libs.slf4j.simple
     testImplementation libs.webdrivermanager
     testImplementation libs.guava
