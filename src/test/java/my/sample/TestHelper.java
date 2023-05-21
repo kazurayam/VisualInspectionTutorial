@@ -1,8 +1,7 @@
 package my.sample;
 
-
-import com.kazurayam.materialstore.core.util.CopyDir;
-import com.kazurayam.materialstore.core.util.DeleteDir;
+import com.kazurayam.materialstore.util.CopyDir;
+import com.kazurayam.materialstore.util.DeleteDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 public class TestHelper {
+
     private static final Logger logger = LoggerFactory.getLogger(TestHelper.class);
     private static final Path currentWorkingDir;
     private static final Path testOutputDir;
@@ -40,12 +40,9 @@ public class TestHelper {
         return testOutputDir;
     }
 
-    /**
+    /*
      * Create dir if not exits.
      * Delete dir if already exits, and recreate it.
-     * @param dir
-     * @return
-     * @throws IOException
      */
     public static Path initializeDirectory(Path dir) throws IOException {
         if (Files.exists(dir)) {

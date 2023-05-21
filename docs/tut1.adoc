@@ -1,0 +1,237 @@
+
+== 1st example: "Hello, materialstore!"
+
+We are going to read the code of
+
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T01HelloMaterialstoreTest.java[my.sample.T01HelloMaterialstoreTest]
+
+This is a JUnit-based Java code that uses the materialstore library.
+
+[source, java]
+.T01HelloMaterialstoreTest.java
+----
+include::../src/test/java/my/sample/T01HelloMaterialstoreTest.java[]
+----
+
+You can run this by running the `test` task of Gradle:
+
+[source]
+----
+$ gradle test --tests  my.sample.T1HelloMaterialstore -i
+> Task :compileJava NO-SOURCE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava
+> Task :processTestResources NO-SOURCE
+> Task :testClasses
+> Task :test
+
+BUILD SUCCESSFUL in 2s
+2 actionable tasks: 2 executed
+----
+
+The `test` task of Gradle will create a report in HTML format where you can find all output from the test execution. You can find the report at `build/reports/tests/test/index.html`.
+
+[sorc,text]
+----
+$ cd ~/tmp/sampleProject
+$ tree build/reports/tests/
+build/reports/tests/
+└── test
+    ├── classes
+    │   └── my.sample.T1HelloMaterialstoreTest.html
+    ├── css
+    │   ├── base-style.css
+    │   └── style.css
+    ├── index.html
+    ├── js
+    │   └── report.js
+    └── packages
+        └── my.sample.html
+
+5 directories, 6 files
+----
+
+You want to open the `index.html` in your Web browser to have a look at the test result.
+
+image::https://kazurayam.github.io/materialstore-tutorial/images/tutorial/01_test_report.png[]
+
+=== File tree created by "Hello, materialstore"
+
+The 1st test will create a new file tree as output:
+
+image:https://kazurayam.github.io/materialstore-tutorial/images/tutorial/02_test_output_file_tree.png[]
+
+Let us read the Java source of the test `T1HelloMaterialstoreTest` line by line to understand the basic concept and classes of the "materialstore" library. Here I assume that you are a well-trained Java programmer who requires no explanation how to code this using JUnit.
+
+=== Create a base directory
+
+[source, text]
+----
+import java.nio.file.Path;
+...
+    @BeforeEach
+    public void beforeEach() {
+        Path dir = createTestClassOutputDir(this);   // (1)
+----
+
+The statement commented as (1) creates a directory `build/tmp/testOutput/<fully qualified class name>`. In this directory the test will save all output files during its run. The helper method `createTestClassOutputDir(Object)` is defined later in the source file.
+
+=== Create the "store" directory
+
+[source, text]
+----
+        Path storeDir = dir.resolve("store");   // (2)
+----
+
+The statement (2) declares an instance of `java.nio.file.Path` class, store it into a variable `storeDir`. The Path object corresponds to the directory `build/tmp/testOutput/<fully qualified class name>/store`.
+
+=== Store class
+
+[source, text]
+----
+import com.kazurayam.materialstore.core.Store;
+...
+
+    private Store store;
+...
+
+        store = Stores.newInstance(storeDir);        // (3)
+----
+
+The statement (3) creates an instance of `com.kazurayam.materialstore.core.Store` class. The statement (3) will create a physical directory `store` if not yet present.
+
+The `Store` class is the core part of the materialstore library. The `Store` class implements methods to write the materials into the OS file system. It also implements methods to select (=retrieve) one or more `Material` object(s) (=file) out of the store.
+
+The `Stores` class is the factory that is capable of creating instance of the `Store` class.
+
+=== JobName class
+
+[source,text]
+----
+import com.kazurayam.materialstore.core.JobName;
+...
+    @Test
+    public void test01_hello_materialstore() throws MaterialstoreException {
+        JobName jobName =
+                new JobName("test01_hello_materialstore");       // (4)
+----
+
+The statement (4) declares the name of a subdirectory under the `store` directory. You can specify a string value as the parameter to the constructor of `com.kazurayam.materialstore.core.JobName` class. It is just a directory name; no deep semantic meaning is enforced. However, you should remember that some ASCII characters are prohibited as a part of file/directory names by the underlying OS; therefore you can not use them as the `JobName` object's value. For example, Windows OS does not allow you to use the following characters:
+
+* `<` (less than)
+* `>` (greater than)
+* `:` (colon)
+* `"` (double quote)
+* `/` (forward slash)
+* `\` (backslash)
+* `|` (vertical bar or pipe)
+* `?` (question mark)
+* `*` (asterisk)
+
+You can use non-latin characters as JobName. JobName can contain white spaces if necessary. For example, you can write:
+
+[source, text]
+----
+    JobName jobName = new JobName("わたしの仕事 means my job");
+----
+
+=== JobTimestamp class
+
+[source, text]
+----
+import com.kazurayam.materialstore.core.JobTimestamp;
+...
+        JobTimestamp jobTimestamp = JobTimestamp.now();          // (5)
+----
+
+The statement (5) declares the name of a new directory, which I will call as *JobTimestamp*, under a *JobName* directory. The JobTimestamp will be in a fixed format of `uuuuMMdd_hhmmss` (year, month, day, hours, minutes, seconds). A call to `JobTimestamp.now()` will return a JobTimestamp object which corresponds to a directory of which name stands for the current timestamp provided by OS.
+
+The `JobTimestamp` class implements various methods that help you work on. See the link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/JobTimestamp.html[javadoc] for detail.
+
+
+=== create a file tree, write a "Material"
+
+[source,text]
+----
+import com.kazurayam.materialstore.core.FileType;
+import com.kazurayam.materialstore.core.Material;
+import com.kazurayam.materialstore.core.Metadata;
+...
+        String text = "Hello, materialstore!";
+        Material material = store.write(jobName, jobTimestamp,   // (6)
+                FileType.TXT,                            // (7)
+                Metadata.NULL_OBJECT,                    // (8)
+                text);                                   // (9)
+----
+
+The lines (6) to (9) creates a file tree under the `store`directory, like this:
+
+[source, text]
+----
+$ cd build/tmp/testOutput/my.sample.T1HelloMaterialstoreTest/
+$ tree .
+store/
+└── test01_hello_materialstore
+    └── 20221128_082216
+        ├── index
+        └── objects
+            └── 4eb4efec3324a630e0d3d96e355261da638c8285.txt
+----
+
+The structure of the file tree under the `store` directory is specially designed to save the *Materials*. The tree structure is fixed: a file named `store/<JobName>/<JobTimestamp>/index` plus one or more files under the `store/<JobName>/<JobTimestamp>/objects/` directory. You are not suppose to *customize* this tructure. You would delegate all tasks of creating + naming + locating files and directories under the `store` directory to the `Store` object.
+
+As the line commented as (6) tells, a "Material" (actually, is a file) is always saved under the sub-tree `store/<JobName>/<JobTimestamp>/objects`.
+
+=== File name of the Materials
+
+All files under the `objects` have a fixed format of file name, that is:
+
+*<40 characters in alpha-numeric, calcurated by the SHA1 hash function>.<file extention>*
+
+for example, a Material could have a file name:
+
+`4eb4efec3324a630e0d3d96e355261da638c8285.txt`
+
+Ths `Store#write()` method call produces the leading 40 characters using the link:https://en.wikipedia.org/wiki/SHA-1[SHA1] message digest function taking the byte array of the file content as the input. This cryptic 40 characters uniquely identifies the input files regardless which type of the file content: a plain text, CSV, HTML, JSON, XML, PNG image, PDF, zipped archive, MS Excel xlsx, etc. This 40 characters is called as `ID` of a Material.
+
+*You are not supposed to specify the name on the file in the materialstore. The ID of a Material is calculated based on the file content by the `Store` class. A single byte change in the file content will result a completely different value of the `ID`.*
+
+=== FileType
+
+The line (7) specifies `FileType.TXT`.
+
+[source, text]
+----
+                FileType.TXT,                            // (7)
+----
+
+(7) assigns a file extension `txt` to the file name. The `com.kazurayam.materialstore.FileType` enum declares many concrete FileType instances ready to use. See
+link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/FileType.html[`com.kazurayam.materialstore.core.FileType`] for the complete list. You can also create your own class that implements `com.kazurayam.materialstore.IFileType`. See link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/IFileType.html[]. You can use your custom FileType wherever a FileType enum is accepted.
+
+=== Metadata
+
+You can associate various metadata to each Material instances. The URL string (e.g., "https://www.google.com/?q=selenium") is a typical metadata of a screenshot of a web page.
+
+The `T01HelloMaterialstoreTest` does not really make use of the Metadata. So, I wrote `Metadata.NULL_OBJECT` to fill the required parameter.
+
+[source,text]
+----
+                Metadata.NULL_OBJECT,                (8)
+----
+
+I will cover how to make full use of Metadata later.
+
+=== Types of objects writeable into the Store
+
+The javadoc of the link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/filesystem/Store.html[`Store`] shows that it can accept multiple types of object as input to write into the `store`:
+
+* `java.lang.String`
+* `byte[]`
+* `java.nio.file.Path`
+* `java.io.File`
+* `java.awt.image.BufferedImage`
+
+These types will cover the most cases in your automated UI testing.
+
+

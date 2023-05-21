@@ -1,0 +1,235 @@
+== 8th example: the Store class basics
+
+We will read the code of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T08StoreBasicsTest.java[my.sample.T08StoreBasicsTest]
+
+The link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html[com.kazurayam.materialstore.core.Store] class create the `store` directory and the directory structure under it. The class implements methods to operate the `store` --- write a byte array into the store to make it a Material; read the byte array from a Material; list the JobNames contained, list the JobTimestamps contained, list the Materials contained. copy the Materials; delete the Materials, the JobTimestamp directory and the JobName directory. Have a quick look at the sample codes that utilize the `Store` class. Then you will understand it is a convenient helper dedicated to manage the web resources (page screenshots, HTML, JSON and XML text and so on) downloaded from the web services.
+
+=== Create a directory tree under the store to write a Material
+
+The following code shows how to create a "store" directory, a directory tree with JobName and JobTimestamp under the "store", and write a Material.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=1..75]
+----
+
+The `T08StoreBasicsTest` class calls the method of link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/SharedMethods.java[my.sample.SharedMethods] class. Read its code as well.
+
+By executing this code, the following directory tree will be created:
+
+[source]
+----
+$ tree build/tmp/testOutput/my.sample.T08StoreBasicsTest/
+build/tmp/testOutput/my.sample.T08StoreBasicsTest/
+└── store
+    └── test_write_a_Material_into_the_store
+        └── 20230520_181718
+            ├── index
+            └── objects
+                └── 27b2d39436d0655e7e8885c7f2a568a646164280.png
+----
+
+In the above tree, you can find some variable parts and fixed parts:
+
+- *store* `/` *JobName* `/` *JobTimestamp* `/index`
+- *store* `/` *JobName* `/` *JobTimestamp* `/objects/` *40 hex-decimal character* `.` *extension*
+
+The top directory can have any name, but I usually name it `store`.
+
+The file name `index` is fixed. The `index` file is created by the Store object. Programmers are not supposed to change it directly.
+
+The *JobName* can be any name, but there are a few characters that are not allowed as file name by OS. For example, a slash `/` is not allowed.
+
+The *JobTimestamp* is a string of fix 15 characters: 4 digits as Year (e.g, `2023`), 2 digits as Month (`01`-`12`), 2 digits as Day (`01`-`31`), an under bar `_`, 2 digits as Hours (`00`- `23`), 2 digits as Minutes (`00`-`59`), 2 digits as Seconds (`00`-`59`). Exceptionally, *JobTimestamp* can be a single under bar character ( _ ), which means the "unspecified".
+
+The directory name `objects` is fixed. Under the `objects`
+
+The name of the files under the `objects` directory is a concatenation of 40 hex-decimal characters derived from the content by SHA1 Message signature algorithm appended with `.` and the *extension*.
+
+The *extension* is something you all know: `txt`, `png`, `jpg`, `json`, `html`, `css`, `html`, `json`, `xml`, etc. The link:https://github.com/kazurayam/materialstore/blob/develop/src/main/java/com/kazurayam/materialstore/core/FileType.java[`com.kazurayam.materialstore.core.FileSystem`] defines the supported extensions. The *extension* makes it possible to open each files by a double click action in the Windows Explorer GUI.
+
+The *store* directory may contain multiple *JobName* directories. A *JobName* directory may contain multiple *JobTimestamp* directories. A *JobTimestamp* will contain a single `index` file. An `objects` directory may contain multiple files.
+
+=== Read the content of a single Material as a byte[]
+
+You can read the content of a Material as file by calling `Store.read(Material)` method.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=76..89]
+----
+
+=== Reading all lines of a Material as text
+
+Provided that a Material is a text file, you can read all lines into a `List<String>` by `Store.reaAllLines(Material)`. 
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=91..101]
+----
+
+If the Material is a binary file (not a text file) then a MaterialstoreException which wraps an IOException will be raised.
+
+=== Listing all JobNames in a Store
+
+Under a `store` directory, there could be zero or more *JobName* directories. Then you would naturally want to get a list of the *JobNames*. You can get it by calling `store.findAllJobNames()`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=103..114]
+----
+
+You would see, for example, the following output in the console:
+
+[source]
+----
+> Task :test
+test_findAllJobNames
+BUILD SUCCESSFUL in 2s
+----
+
+=== Listing all JobTimestamps in a JobName directory
+
+Under a *JobName* directory, there could be zero or more *JobTimestamp* directories. Then you would naturally want to get a list of the *JobTimestamps*. You can get it by calling `store.findAllJobTimestamps()`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=116..127]
+----
+
+You would see, for example, the following output in the console:
+
+[source]
+----
+> Task :test
+20230521_072016
+BUILD SUCCESSFUL in 2s
+----
+
+=== Finding the latest JobTimestamps in a JobName directory
+
+Under a *JobName* directory, there could be multiple *JobTimestamp* directories. The name of *JobTimestamp* directories are moving as time goes by. Then you would naturally want a way to find the latest (newest)*JobTimestamp* in a *JobName*. You can get it by calling `store.findLatestJobTimestamps()`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=129..138]
+----
+
+=== Finding JobTimestamps prior to the specified JobTimestamp
+
+You can find a subset of *JobTimestamps* under a *JobName* prior to a specific JobTimestamp value by calling `store.findAllJobTimestampsPriorTo(JobName jobName, JobTimestamp priorTo)`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=140..152]
+----
+
+=== Resolving if a specific JobName/JobTimestamp is present
+
+Provided that a `store` file tree is given, you may want to find out if a specific value of *JobName* is present in the file tree. You may also want to find out if a specific value of *JobTimestamp* is present there. You can resolve by calling `store.contains(JobName)` and `store.contains(JobName, JobTimestamp)`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=154..165]
+----
+
+=== Copying all objects of a JobTimestamp into another JobTimestamp
+
+Provided that a *JobTimestamp* with one or more Material objects in a *JobName*, you can copy all the Materials into another *JobTimestamp* in the *JobName* by calling `store.copyMaterials(JobName jn, JobTimestamp source, JobTimestamp target)`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=167..179]
+----
+
+If the *JobTimestamp* as target is not there, a new JobTimestamp will be added. If the *JobTimestamp* as target is already there, the `Store` tries to write the Materials into the specified *JobTimestamp*. Here the "duplication" of Materials in a *JobTimestamp* matters. I will explain about the "duplication" later in more detail.
+
+=== Exporting a Material out of the store into a file at arbitrary location
+
+You can take a copy of Material out of the *store* directory, and place it into an arbitrary location in OS filesystem. You can do it by calling `store.retrieve(Material, Path)`. Here `Path` is an instance of link:https://docs.oracle.com/javase/8/docs/api/java/nio/file/Path.html[`java.nio.file.Path`] class.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=181..196]
+----
+
+=== Deleting a JobTimestamp directory recursively
+
+You can remove a JobTimestamp directory while deleting all the files contained by `store.deleteJobTimestamp(JobName, JobTimestamp)`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=198..210]
+----
+
+=== Deleting a JobName directory recursively
+
+You can remove a JobName directory while deleting all JobTimestamp directories by `store.deleteJobName(JobName)`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=212..222]
+----
+
+=== You can not create 2 Materials with the same FileType and Metadata
+
+A single Material is not identified by the ID (40 hex-decimal characters derived from the file content by SHA1 Message signature). A single Material is identified by the combination of FileType and the Metadata associate to each Material. You can not create 2 Materials with the same FileType and Metadata in a single JobTimestamp.
+
+The following code demonstrate that you will get an Exception when you try to write a duplicating Material into a JobTimestamp directory.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=224..246]
+----
+
+[source]
+----
+> Task :test
+com.kazurayam.materialstore.core.DuplicatingMaterialException: The combination of fileType=txt and metadata={"foo":"bar", "URL.host":"github.com", "URL.path":"/kazurayam/materialstore-tutorial", "URL.port":"80", "URL.protocol":"https"} is already there in the index.
+	at com.kazurayam.materialstore.core.Jobber.write(Jobber.java:165)
+	at com.kazurayam.materialstore.core.StoreImpl.write(StoreImpl.java:948)
+	at com.kazurayam.materialstore.core.StoreImpl.write(StoreImpl.java:930)
+	at my.sample.T08StoreBasicsTest.test_unable_to_write_material_with_duplicating_Metadata(T08StoreBasicsTest.java:239)
+...
+BUILD SUCCESSFUL in 53s
+3 actionable tasks: 2 executed, 1 up-to-date
+----
+
+=== You can create 2 Materials with the same ID, same FileType if the Metadata is unique
+
+However, in a single JobTimestamp, you can create another Material of duplicating byte contents as far as you associate a unique Metadata to each.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=248..276]
+----
+
+=== Getting the Path on which the Store is constructed
+
+When you construct an instance of `com.kazurayam.materialstore.core.Store` class, you need to specify an instance of `java.nio.file.Path` as argument. Obviously, you can retrieve the Path out of the Store instance by calling `store.getRoot()`.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=278..283]
+----
+
+
+=== Getting the Path of JobName, of JobTimestamp, of Material
+
+Each instance of *JobName*, *JobTimestamp* and *Material* have corresponding instance of `java.nio.file.Path`. You can retrieve the Path value by calling `store.getPath(...)`. The following code shows how to.
+
+[source]
+----
+include::../src/test/java/my/sample/T08StoreBasicsTest.java[lines=285..319]
+----
+
+=== Other methods implemented in the Store
+
+link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html[`com.kazurayam.materialstore.core.Store`] class implements a few more methods, for example:
+
+- link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#findJobTimestampsReferredBy(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp)[`findJobTimestampsReferredBy()`]
+- link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#hasDifferentiatingIndexEntry(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp)[`hasDifferenciatingIndexEntry`]
+- link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#findJobTimestampsReferredBy(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp)[`reflect()`]
+
+These methods are used internally by the classes in the materialstore library. They encapsulate complicated details, so I would not cover them here in this tutorial document.
+

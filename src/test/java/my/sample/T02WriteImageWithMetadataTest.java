@@ -1,17 +1,16 @@
 package my.sample;
 
-import com.kazurayam.materialstore.core.filesystem.FileType;
-import com.kazurayam.materialstore.core.filesystem.JobName;
-import com.kazurayam.materialstore.core.filesystem.JobTimestamp;
-import com.kazurayam.materialstore.core.filesystem.Material;
-import com.kazurayam.materialstore.core.filesystem.MaterialstoreException;
-import com.kazurayam.materialstore.core.filesystem.Metadata;
-import com.kazurayam.materialstore.core.filesystem.Store;
-import com.kazurayam.materialstore.core.filesystem.Stores;
+import com.kazurayam.materialstore.core.FileType;
+import com.kazurayam.materialstore.core.JobName;
+import com.kazurayam.materialstore.core.JobTimestamp;
+import com.kazurayam.materialstore.core.Material;
+import com.kazurayam.materialstore.core.MaterialstoreException;
+import com.kazurayam.materialstore.core.Metadata;
+import com.kazurayam.materialstore.core.Store;
+import com.kazurayam.materialstore.core.Stores;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 
@@ -23,7 +22,7 @@ public class T02WriteImageWithMetadataTest {
     private Store store;
 
     @BeforeEach
-    public void beforeEach() throws IOException {
+    public void beforeEach() {
         Path testClassOutputDir = TestHelper.createTestClassOutputDir(this);
         store = Stores.newInstance(testClassOutputDir.resolve("store"));
     }
@@ -33,8 +32,8 @@ public class T02WriteImageWithMetadataTest {
         JobName jobName = new JobName("test02_write_image_with_metadata");
         JobTimestamp jobTimestamp = JobTimestamp.now();
         URL url = SharedMethods.createURL(                     // (10)
-                "https://kazurayam.github.io/materialstore/images/tutorial/03_apple.png");
-        byte[] bytes = SharedMethods.downloadUrl(url);         // (11)
+                "https://kazurayam.github.io/materialstore-tutorial/images/tutorial/03_apple.png");
+        byte[] bytes = SharedMethods.downloadUrlToByteArray(url);         // (11)
         Material material =
                 store.write(jobName, jobTimestamp,             // (12)
                         FileType.PNG,
@@ -53,7 +52,7 @@ public class T02WriteImageWithMetadataTest {
                 material.getMetadata().get("URL.protocol"));
         assertEquals("kazurayam.github.io",
                 material.getMetadata().get("URL.host"));        // (15)
-        assertEquals("/materialstore/images/tutorial/03_apple.png",
+        assertEquals("/materialstore-tutorial/images/tutorial/03_apple.png",
                 material.getMetadata().get("URL.path"));
         assertEquals("01", material.getMetadata().get("step"));
     }

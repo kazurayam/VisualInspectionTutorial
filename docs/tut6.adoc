@@ -1,0 +1,41 @@
+== 6th example: generate an HTML report of a MaterialList
+
+We are going to read the code of
+
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T06MaterialListReportTest.java[my.sample.T06MaterialListReportTest]
+
+Once you saved several screenshots into the store, you would frequently want to review them. You would want to look the images associated with various metadata. The following code shows how to compile an HTML that renders 3 PNG images with metadata.
+
+[source,text]
+----
+include::../src/test/java/my/sample/T06MaterialListReportTest.java[lines=19..46]
+----
+
+Running this JUnit5 test will result a new file tree at `build/tmp/testOutput/my.sample.T06MaterialListReportTest/`. It will look somehting like this:
+
+[source]
+----
+build/tmp/testOutput/my.sample.T06MaterialListReportTest/
+└── store
+    ├── test06_makeMaterialListReport
+    │   └── 20230519_172740
+    │       ├── index
+    │       └── objects
+    │           ├── 27b2d39436d0655e7e8885c7f2a568a646164280.png
+    │           ├── 36f9f62bdb3ad45cb8c6bc1f4062fbbd4fd180db.png
+    │           └── 8a997bec64cd056c2075da95c0c281320ee7a7c1.png
+    └── test06_makeMaterialListReport-20230519_172740.html
+----
+
+The top page shows a list of Materials.
+
+image::https://kazurayam.github.io/materialstore-tutorial/images/tutorial//09_MaterialListReport_list.png[]
+
+You can click one of the rows to open it. When opened, you can see the PNG image is rendered.
+
+image::https://kazurayam.github.io/materialstore-tutorial/images/tutorial//10_MaterialListReport_apple.png[]
+
+The location and the name of the report HTML is fixed. The report HTML file will be located immediately under the `store` directory. The file name will be in the format of `store/<JobName>-<JobTimestamp>.html`.
+
+
+

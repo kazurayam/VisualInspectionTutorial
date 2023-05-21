@@ -1,0 +1,29 @@
+== 4th example: retrieving a single Material from the store
+
+We are going to read the code of
+
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/T04SelectASingleMaterialWithQueryTest.java[my.sample.T04SelectASingleMaterialWithQueryTest]
+
+[source,text]
+----
+include::../src/test/java/my/sample/T04SelectASingleMaterialWithQueryTest.java[lines=27..50]
+----
+
+This test retrieves a single Material object which has a Metadata of `"step": "02"`.This test emits the following output:
+
+[source]
+----
+> Task :test
+png {"label":"mikan", "step":"02", "URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/04_mikan.png", "URL.port":"80", "URL.protocol":"https"}
+
+02 'mikan' https://kazurayam.github.io/materialstore-tutorial/images/tutorial/04_mikan.png
+
+BUILD SUCCESSFUL in 2s
+----
+
+For detail, have a look at javadocs:
+
+- link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#selectSingle(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp)[com.kazurayam.materialstore.core.Store#selectSingle(JobName, JobTimestamp, QueryOnMetadata)]
+- link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Material.html[com.kazurayam.materialstore.core.Material]
+- link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Metadata.html[com.kazurayam.materialstore.core.Metadata]
+- link:https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/QueryOnMetadata.html[com.kazurayam.materialstore.core.QueryOnMetadata]
