@@ -178,6 +178,7 @@ public class T08StoreBasicsTest {
         assertEquals(3, materialList.size());
     }
 
+    @Test
     public void test_retrieve() throws MaterialstoreException {
         // create test fixtures
         JobName jobName = new JobName("test_copyMaterials");
@@ -245,11 +246,11 @@ public class T08StoreBasicsTest {
     }
 
     @Test
-    public void test_able_to_write_materials_with_same_ID_unique_Metadata()
+    public void test_able_to_write_materials_with_unique_Metadata()
             throws MalformedURLException, MaterialstoreException {
         // create test fixtures
         JobName jobName =
-                new JobName("test_able_to_write_materials_with_same_ID_unique_Metadata");
+                new JobName("test_able_to_write_materials_with_unique_Metadata");
         JobTimestamp jobTimestamp = JobTimestamp.now();
         URL url = new URL("https://github.com/kazurayam/materialstore-tutorial");
         //

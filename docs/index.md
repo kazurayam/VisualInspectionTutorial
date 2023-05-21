@@ -53,6 +53,16 @@
         -   [Listing all JobTimestamps in a JobName directory](#listing-all-jobtimestamps-in-a-jobname-directory)
         -   [Finding the latest JobTimestamps in a JobName directory](#finding-the-latest-jobtimestamps-in-a-jobname-directory)
         -   [Finding JobTimestamps prior to the specified JobTimestamp](#finding-jobtimestamps-prior-to-the-specified-jobtimestamp)
+        -   [Resolving if a specific JobName/JobTimestamp is present](#resolving-if-a-specific-jobnamejobtimestamp-is-present)
+        -   [Copying all objects of a JobTimestamp into another JobTimestamp](#copying-all-objects-of-a-jobtimestamp-into-another-jobtimestamp)
+        -   [Exporting a Material out of the store into a file at arbitrary location](#exporting-a-material-out-of-the-store-into-a-file-at-arbitrary-location)
+        -   [Deleting a JobTimestamp directory recursively](#deleting-a-jobtimestamp-directory-recursively)
+        -   [Deleting a JobName directory recursively](#deleting-a-jobname-directory-recursively)
+        -   [You can not create 2 Materials with the same FileType and Metadata](#you-can-not-create-2-materials-with-the-same-filetype-and-metadata)
+        -   [You can create 2 Materials with the same ID, same FileType if the Metadata is unique](#you-can-create-2-materials-with-the-same-id-same-filetype-if-the-metadata-is-unique)
+        -   [Getting the Path on which the Store is constructed](#getting-the-path-on-which-the-store-is-constructed)
+        -   [Getting the Path of JobName, of JobTimestamp, of Material](#getting-the-path-of-jobname-of-jobtimestamp-of-material)
+        -   [Other methods implemented in the Store](#other-methods-implemented-in-the-store)
 
 # Materialstore Tutorial
 
@@ -120,7 +130,7 @@ You will also find a file `sampleProject/build.gradle` file, but it will be empt
     }
 
     dependencies {
-        testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.5'
+        testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.6-SNAPSHOT'
         testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
         testImplementation group: 'commons-io', name: 'commons-io', version: '2.12.0'
         testImplementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
@@ -1396,3 +1406,232 @@ You can find a subset of **JobTimestamps** under a **JobName** prior to a specif
             jtList = store.findAllJobTimestampsPriorTo(jobName, JobTimestamp.laterThan(jt));
             assertEquals(1, jtList.size());
         }
+
+### Resolving if a specific JobName/JobTimestamp is present
+
+Provided that a `store` file tree is given, you may want to find out if a specific value of **JobName** is present in the file tree. You may also want to find out if a specific value of **JobTimestamp** is present there. You can resolve by calling `store.contains(JobName)` and `store.contains(JobName, JobTimestamp)`.
+
+        @Test
+        public void test_contains() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_contains");
+            JobTimestamp jt = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jt);
+            // use store.contains() method
+            assertTrue(store.contains(jobName));
+            assertFalse(store.contains(new JobName("no such JobName")));
+            assertTrue(store.contains(jobName, jt));
+            assertFalse(store.contains(jobName, JobTimestamp.laterThan(jt)));
+        }
+
+### Copying all objects of a JobTimestamp into another JobTimestamp
+
+Provided that a **JobTimestamp** with one or more Material objects in a **JobName**, you can copy all the Materials into another **JobTimestamp** in the **JobName** by calling `store.copyMaterials(JobName jn, JobTimestamp source, JobTimestamp target)`.
+
+        @Test
+        public void test_copyMaterials() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_copyMaterials");
+            JobTimestamp sourceJT = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, sourceJT);
+            //
+            JobTimestamp targetJT = JobTimestamp.laterThan(sourceJT);
+            store.copyMaterials(jobName, sourceJT, targetJT);
+            assertTrue(store.contains(jobName, targetJT));
+            MaterialList materialList = store.select(jobName, targetJT);
+            assertEquals(3, materialList.size());
+        }
+
+If the **JobTimestamp** as target is not there, a new JobTimestamp will be added. If the **JobTimestamp** as target is already there, the `Store` tries to write the Materials into the specified **JobTimestamp**. Here the "duplication" of Materials in a **JobTimestamp** matters. I will explain about the "duplication" later in more detail.
+
+### Exporting a Material out of the store into a file at arbitrary location
+
+You can take a copy of Material out of the **store** directory, and place it into an arbitrary location in OS filesystem. You can do it by calling `store.retrieve(Material, Path)`. Here `Path` is an instance of [`java.nio.file.Path`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Path.html) class.
+
+        @Test
+        public void test_retrieve() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_copyMaterials");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);
+            Material apple = store.selectSingle(jobName, jobTimestamp, FileType.PNG,
+                    QueryOnMetadata.builder().put("label", "apple").build());
+            assertNotNull(apple);
+            //
+            Path outFile = Paths.get(System.getProperty("user.home"))
+                    .resolve("tmp/retrieved.png");
+            store.retrieve(apple, outFile);
+            assertTrue(Files.exists(outFile));
+            assertTrue(outFile.toFile().length() > 0);
+        }
+
+### Deleting a JobTimestamp directory recursively
+
+You can remove a JobTimestamp directory while deleting all the files contained by `store.deleteJobTimestamp(JobName, JobTimestamp)`.
+
+        @Test
+        public void test_deleteJobTimestamp() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_deleteJobTimestamp");
+            JobTimestamp sourceJT = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, sourceJT);
+            JobTimestamp targetJT = JobTimestamp.laterThan(sourceJT);
+            store.copyMaterials(jobName, sourceJT, targetJT);
+            assertTrue(store.contains(jobName, targetJT));
+            // now delete the targetJT and files contained there
+            store.deleteJobTimestamp(jobName, targetJT);
+            assertFalse(store.contains(jobName, targetJT));
+        }
+
+### Deleting a JobName directory recursively
+
+You can remove a JobName directory while deleting all JobTimestamp directories by `store.deleteJobName(JobName)`.
+
+        @Test
+        public void test_deleteJobName() throws MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_deleteJobName");
+            JobTimestamp sourceJT = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, sourceJT);
+            assertTrue(store.contains(jobName));
+            // now delete the JobName and files contained there
+            store.deleteJobName(jobName);
+            assertFalse(store.contains(jobName));
+        }
+
+### You can not create 2 Materials with the same FileType and Metadata
+
+A single Material is not identified by the ID (40 hex-decimal characters derived from the file content by SHA1 Message signature). A single Material is identified by the combination of FileType and the Metadata associate to each Material. You can not create 2 Materials with the same FileType and Metadata in a single JobTimestamp.
+
+The following code demonstrate that you will get an Exception when you try to write a duplicating Material into a JobTimestamp directory.
+
+        @Test
+        public void test_unable_to_write_material_with_duplicating_Metadata()
+                throws MalformedURLException, MaterialstoreException {
+            // create test fixtures
+            JobName jobName = new JobName("test_unable_to_write_material_with_duplicating_Metadata");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            URL url = new URL("https://github.com/kazurayam/materialstore-tutorial");
+            Metadata metadata = Metadata.builder(url).put("foo", "bar").build();
+            Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
+                    metadata, "Hello, Materialstore!");
+            try {
+                // this code will cause a DuplicatingMaterialException to be raised
+                // as you can not write a Material with a duplicating combination of
+                // FileType + Metadata
+                byte[] bytes = store.read(mt1);
+                Material mt2 = store.write(jobName, jobTimestamp, FileType.TXT,
+                        metadata, bytes);
+
+                throw new RuntimeException("expected to raise a DuplicatingMaterialException, but not");
+            } catch (DuplicatingMaterialException e) {
+                e.printStackTrace();
+            }
+        }
+
+    > Task :test
+    com.kazurayam.materialstore.core.DuplicatingMaterialException: The combination of fileType=txt and metadata={"foo":"bar", "URL.host":"github.com", "URL.path":"/kazurayam/materialstore-tutorial", "URL.port":"80", "URL.protocol":"https"} is already there in the index.
+        at com.kazurayam.materialstore.core.Jobber.write(Jobber.java:165)
+        at com.kazurayam.materialstore.core.StoreImpl.write(StoreImpl.java:948)
+        at com.kazurayam.materialstore.core.StoreImpl.write(StoreImpl.java:930)
+        at my.sample.T08StoreBasicsTest.test_unable_to_write_material_with_duplicating_Metadata(T08StoreBasicsTest.java:239)
+    ...
+    BUILD SUCCESSFUL in 53s
+    3 actionable tasks: 2 executed, 1 up-to-date
+
+### You can create 2 Materials with the same ID, same FileType if the Metadata is unique
+
+However, in a single JobTimestamp, you can create another Material of duplicating byte contents as far as you associate a unique Metadata to each.
+
+        @Test
+        public void test_able_to_write_materials_with_unique_Metadata()
+                throws MalformedURLException, MaterialstoreException {
+            // create test fixtures
+            JobName jobName =
+                    new JobName("test_able_to_write_materials_with_unique_Metadata");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            URL url = new URL("https://github.com/kazurayam/materialstore-tutorial");
+            //
+            Metadata metadata1 = Metadata.builder(url).put("step", "01").build();
+            Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
+                    metadata1, "Hello, Materialstore!");
+            Metadata metadata2 = Metadata.builder(url).put("step", "02").build();
+
+            // write one more Material with the same ID but with unique Metadata
+            byte[] bytes = store.read(mt1);
+            Material mt2 = store.write(jobName, jobTimestamp, FileType.TXT,
+                    metadata2, bytes);
+            MaterialList materialList = store.select(jobName, jobTimestamp);
+
+            // make sure there are 2 Materials writen
+            assertEquals(2, materialList.size());
+            for (Material m : materialList) {
+                System.out.printf("%s\t%s\t%s\n",
+                        m.getID().toString(),
+                        m.getFileType().getExtension(),
+                        m.getMetadata().getMetadataIdentification().toString());
+            }
+        }
+
+### Getting the Path on which the Store is constructed
+
+When you construct an instance of `com.kazurayam.materialstore.core.Store` class, you need to specify an instance of `java.nio.file.Path` as argument. Obviously, you can retrieve the Path out of the Store instance by calling `store.getRoot()`.
+
+        @Test
+        public void test_getRoot() {
+            Path storeDir = store.getRoot();
+            assertEquals("store", storeDir.getFileName().toString());
+            assertEquals(root, storeDir);
+        }
+
+### Getting the Path of JobName, of JobTimestamp, of Material
+
+Each instance of **JobName**, **JobTimestamp** and **Material** have corresponding instance of `java.nio.file.Path`. You can retrieve the Path value by calling `store.getPath(…​)`. The following code shows how to.
+
+        @Test
+        public void test_getPathOf() throws MalformedURLException, MaterialstoreException {
+            // create test fixtures
+            JobName jobName =
+                    new JobName("test_getPathOf");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            URL url = new URL("https://github.com/kazurayam/materialstore-tutorial");
+            Metadata metadata1 = Metadata.builder(url).put("step", "01").build();
+            Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
+                    metadata1, "Hello, Materialstore!");
+
+            // test getting the Path of JobName directory
+            Path jobNamePath = store.getPathOf(jobName);
+            System.out.println("jobNamePath=" +
+                    projectDir.relativize(jobNamePath).toString());
+            assertEquals(jobName.getJobName(), jobNamePath.getFileName().toString());
+
+            // test getting the Path of JobTimestamp directory
+            Path jobTimestampPath = store.getPathOf(jobName, jobTimestamp);
+            System.out.println("jobTimestampPath=" +
+                    projectDir.relativize(jobTimestampPath).toString());
+            assertEquals(jobTimestamp.toString(), jobTimestampPath.getFileName().toString());
+
+            // test getting the Path of Material file
+            Path materialPath = store.getPathOf(mt1);
+            System.out.println("materialPath=" +
+                    projectDir.relativize(materialPath).toString());
+            assertTrue(materialPath.getFileName().toString().startsWith(mt1.getID().toString()));
+
+            // test getting the Path of Material, a simpler way
+            Path materialPathAlt = mt1.toPath();
+            System.out.println("materialPathAlt=" +
+                    projectDir.relativize(materialPathAlt).toString());
+            assertTrue(materialPathAlt.getFileName().toString().startsWith(mt1.getID().toString()));
+        }
+
+### Other methods implemented in the Store
+
+[`com.kazurayam.materialstore.core.Store`](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html) class implements a few more methods, for example:
+
+-   [`findJobTimestampsReferredBy()`](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#findJobTimestampsReferredBy(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp))
+
+-   [`hasDifferenciatingIndexEntry`](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#hasDifferentiatingIndexEntry(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp))
+
+-   [`reflect()`](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#findJobTimestampsReferredBy(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp))
+
+These methods are used internally by the classes in the materialstore library. They encapsulate complicated details, so I would not cover them here in this tutorial document.
