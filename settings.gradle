@@ -3,7 +3,7 @@ rootProject.name = 'materialstore-tutorial'
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
-            version('inspectus', '0.9.5')
+            version('inspectus', '0.9.6-SNAPSHOT')
             library('inspectus', 'com.kazurayam', 'inspectus'). versionRef('inspectus')
 
             version('junit5', '5.9.2')

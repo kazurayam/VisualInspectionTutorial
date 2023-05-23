@@ -1,0 +1,39 @@
+== Taking screenshots of a website and compile a report as HTML
+
+We will read the code of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09SeleniumShootingsTest.java[`my.sample.T09SeleniumShootingsTest`].
+
+In this section, I will explain a Java code opens web pages in a browser, take screenshots of the pages, and save the PNG files into the `store` directory associating Metadata with each Material objects. The code uses link:https://www.selenium.dev/documentation/webdriver/[WebDriver] library to automate interactions with web browser and tak screenshots. Once screenshots are taken, the code uses the materialstore library to persist the images into disk, and compile a HTML report.
+
+=== WebDriver
+
+I assume that you have enough knowledge about `WebDriver`. If not, please get introduced by the tutorials on the Internet, for example:
+
+- link:https://www.guru99.com/selenium-tutorial.html[]
+
+=== the sample code
+
+Have a look at the source of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09SeleniumShootingsTest.java[`my.sample.T09SeleniumShootingsTest`]
+
+[source]
+----
+include::../src/test/java/my/sample/T09SeleniumShootingsTest.java[]
+----
+
+
+The `T09SeleniumShootingsTest` class calls some helper classes:
+
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/MaterializeUtils.java[`my.sample.MaterializeUtils`]
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/SharedMethods.java[`my.sample.SharedMethods`]
+- link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/TestHelper.java[`my.sample.TestHelper`]
+
+The code depends on several external libraries
+
+- link:https://github.com/kazurayam/ashotwrapper[AShotWrapper]
+- link:https://github.com/kazurayam/inspectus[inspectus]
+
+By running `my.sample.T9SeleniumShootingTest` I got an HTML report:
+
+- link:
+
+
+

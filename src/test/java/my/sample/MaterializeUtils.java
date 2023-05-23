@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 public class MaterializeUtils {
 
     /**
-     * take screenshot of web pages using selenium API,
+     * take screenshot of web pages using selenium API wrapped by the AShotWrapper,
      * store the image into the store
      */
     public static Material takePageScreenshotSaveIntoStore(

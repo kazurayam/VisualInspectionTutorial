@@ -3,21 +3,26 @@
 * link:https://kazurayam.github.io/materialstore/api/index.html[materialstore API javadoc]
 * back to the link:https://github.com/kazurayam/materialstore[materialstore repository]
 
-include::tut0.adoc[]
+include::tut00.adoc[]
 
-include::tut1.adoc[]
+include::tut01.adoc[]
 
-include::tut2.adoc[]
+include::tut02.adoc[]
 
-include::tut3.adoc[]
+include::tut03.adoc[]
 
-include::tut4.adoc[]
+include::tut04.adoc[]
 
-include::tut5.adoc[]
+include::tut05.adoc[]
 
-include::tut6.adoc[]
+include::tut06.adoc[]
 
-include::tut7.adoc[]
+include::tut07.adoc[]
 
-include::tut8.adoc[]
+include::tut08.adoc[]
 
+include::tut09.adoc[]
+
+include::tut10.adoc[]
+
+include::tut11.adoc[]

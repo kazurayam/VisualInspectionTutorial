@@ -46,7 +46,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class T10SeleniumTwinsDiffTest {
 
-    private static Path projectDir;
     private static Path outputDir;
     private static Path dataDir;
     private Path root;
@@ -56,7 +55,7 @@ public class T10SeleniumTwinsDiffTest {
 
     @BeforeAll
     public static void beforeAll() throws IOException {
-        projectDir = Paths.get(".").toAbsolutePath();
+        Path projectDir = Paths.get(".").toAbsolutePath();
         outputDir = projectDir.resolve("build/tmp/testOutput")
                 .resolve(T10SeleniumTwinsDiffTest.class.getName());
         if (Files.exists(outputDir)) {

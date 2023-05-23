@@ -63,6 +63,8 @@
         -   [Getting the Path on which the Store is constructed](#getting-the-path-on-which-the-store-is-constructed)
         -   [Getting the Path of JobName, of JobTimestamp, of Material](#getting-the-path-of-jobname-of-jobtimestamp-of-material)
         -   [Other methods implemented in the Store](#other-methods-implemented-in-the-store)
+    -   [9th example: Comparing 2 environments of a Web system visually : Twins Diff](#9th-example-comparing-2-environments-of-a-web-system-visually-twins-diff)
+    -   [10th example: Comparing a Web system visually before and after a planned change : Chronos Diff](#10th-example-comparing-a-web-system-visually-before-and-after-a-planned-change-chronos-diff)
 
 # Materialstore Tutorial
 
@@ -130,23 +132,23 @@ You will also find a file `sampleProject/build.gradle` file, but it will be empt
     }
 
     dependencies {
-        testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.6-SNAPSHOT'
+        testImplementation libs.inspectus
+        testImplementation libs.slf4j.api
+        testImplementation libs.selenium4
+        testImplementation libs.ashotwrapper
+        testImplementation libs.slf4j.simple
+        testImplementation libs.webdrivermanager
+        testImplementation libs.guava
+        testImplementation libs.commonsio
+        testImplementation libs.junit.jupiter.api
+        testRuntimeOnly libs.junit.jupiter.engine
+
+        //testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.6-SNAPSHOT'
         testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
         testImplementation group: 'commons-io', name: 'commons-io', version: '2.12.0'
-        testImplementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-        testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
     }
 
     test {
-        useJUnitPlatform()
-    }
-
-    task compileTutorial {
-        // run docs/indexconv.sh to generate index.md from index_.adoc
-        doLast {
-            exec {
 
 Please note that in the build.gradle we declared the dependency to the `materialstore` library, which is published at the Maven Central repository.
 
@@ -1451,11 +1453,11 @@ You can take a copy of Material out of the **store** directory, and place it int
         @Test
         public void test_retrieve() throws MaterialstoreException {
             // create test fixtures
-            JobName jobName = new JobName("test_copyMaterials");
+            JobName jobName = new JobName("test_retrieve");
             JobTimestamp jobTimestamp = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, jobTimestamp);
             Material apple = store.selectSingle(jobName, jobTimestamp, FileType.PNG,
-                    QueryOnMetadata.builder().put("label", "apple").build());
+                    QueryOnMetadata.builder().put("label", "red apple").build());
             assertNotNull(apple);
             //
             Path outFile = Paths.get(System.getProperty("user.home"))
@@ -1648,4 +1650,12 @@ Each instance of **JobName**, **JobTimestamp** and **Material** have correspondi
 
 -   [`reflect()`](https://kazurayam.github.io/materialstore/api/com/kazurayam/materialstore/core/Store.html#findJobTimestampsReferredBy(com.kazurayam.materialstore.core.JobName,com.kazurayam.materialstore.core.JobTimestamp))
 
-These methods are used internally by the classes in the materialstore library. They encapsulate complicated details, so I would not cover them here in this tutorial document.
+These methods are used internally by the classes in the materialstore library. Also, these methods are used by the [`inspectus`](https://github.com/kazurayam/inspectus) library in order to implement what I call **Visual Inspection** --- comparing 2 sets of Material to find differences. These methods encapsulate the complicated processing details; so I would not cover them here in this tutorial document.
+
+## 9th example: Comparing 2 environments of a Web system visually : Twins Diff
+
+TO AUTHOR YET
+
+## 10th example: Comparing a Web system visually before and after a planned change : Chronos Diff
+
+TO AUTHOR YET

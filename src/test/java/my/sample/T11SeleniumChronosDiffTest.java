@@ -54,14 +54,13 @@ import java.util.function.BiFunction;
  */
 public class T11SeleniumChronosDiffTest {
     private final Logger logger = LoggerFactory.getLogger(T11SeleniumChronosDiffTest.class);
-    private static Path projectDir;
     private static Path outputDir;
     private WebDriver driver;
     private WebDriverFormulas wdf;
 
     @BeforeAll
     static void beforeAll() throws IOException {
-        projectDir = Paths.get(".").toAbsolutePath();
+        Path projectDir = Paths.get(".").toAbsolutePath();
         outputDir = projectDir.resolve("build/tmp/testOutput")
                 .resolve(T11SeleniumChronosDiffTest.class.getName());
         if (Files.exists(outputDir)) {
@@ -113,6 +112,8 @@ public class T11SeleniumChronosDiffTest {
                         .build();
                 Inspectus chronosDiff = new FnChronosDiff(fn);
                 chronosDiff.execute(parameters);
+            } else {
+                throw e;
             }
         }
     }

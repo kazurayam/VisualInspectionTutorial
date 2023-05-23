@@ -1,0 +1,3 @@
+ec57bcb789d022df7780c1f35767e2ae5c63a2ec	png	{"environment":"DevelopmentEnv", "step":"01", "URL.host":"devadmin.kazurayam.com", "URL.path":"/index.html", "URL.port":"80", "URL.protocol":"http"}
+e2312cbdf9da887ccc934f040e761ec041fd1588	png	{"environment":"DevelopmentEnv", "step":"02", "URL.host":"devadmin.kazurayam.com", "URL.path":"/repositories.html", "URL.port":"80", "URL.protocol":"http"}
+492237d86d994f1e6c99c7b36385c1e8f0ad559e	png	{"environment":"DevelopmentEnv", "step":"03", "URL.host":"devadmin.kazurayam.com", "URL.path":"/proverbs.html", "URL.port":"80", "URL.protocol":"http"}
