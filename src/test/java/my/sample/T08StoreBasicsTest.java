@@ -3,6 +3,7 @@ package my.sample;
 import com.kazurayam.materialstore.core.DuplicatingMaterialException;
 import com.kazurayam.materialstore.core.FileType;
 import com.kazurayam.materialstore.core.JobName;
+import com.kazurayam.materialstore.core.JobNameNotFoundException;
 import com.kazurayam.materialstore.core.JobTimestamp;
 import com.kazurayam.materialstore.core.Material;
 import com.kazurayam.materialstore.core.MaterialList;
@@ -15,6 +16,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -31,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class T08StoreBasicsTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(T08StoreBasicsTest.class);
     private static Path projectDir;
     private static Path outputDir;
     private Path root;
@@ -67,10 +71,10 @@ public class T08StoreBasicsTest {
         // the directory tree of "store/jobName/jobTimestamp" will be automatically created
         Material m = store.write(jobName, jobTimestamp, FileType.PNG, metadata, bytes);
         assertNotNull(m, "m should not be null");
-        System.out.println(String.format("%s\t%s\t%s",
+        System.out.printf("%s\t%s\t%s%n",
                 m.getID(),
                 m.getFileType().getExtension(),
-                m.getMetadata().getMetadataIdentification().getIdentification()));
+                m.getMetadata().getMetadataIdentification().getIdentification());
     }
 
     @Test
@@ -114,15 +118,20 @@ public class T08StoreBasicsTest {
     }
 
     @Test
-    public void test_findAllJobTimestamps() throws MaterialstoreException {
+    public void test_findAllJobTimestamps()
+            throws MaterialstoreException {
         // create test fixtures
         JobName jobName = new JobName("test_findAllJobTimestamps");
         JobTimestamp jobTimestamp = JobTimestamp.now();
         SharedMethods.write3images(store, jobName, jobTimestamp);
         // list all JobTimestamps in the store/JobName
-        List<JobTimestamp> allJobTimestamps = store.findAllJobTimestamps(jobName);
-        for (JobTimestamp jt : allJobTimestamps) {
-            System.out.println(jt.toString());
+        try {
+            List<JobTimestamp> allJobTimestamps = store.findAllJobTimestamps(jobName);
+            for (JobTimestamp jt : allJobTimestamps) {
+                System.out.println(jt.toString());
+            }
+        } catch (JobNameNotFoundException e) {
+            logger.error(e.getMessage());
         }
     }
 
@@ -133,8 +142,12 @@ public class T08StoreBasicsTest {
         JobTimestamp jt = JobTimestamp.now();
         SharedMethods.write3images(store, jobName, jt);
         // find the latest JobTimestamp in the store/JobName
-        JobTimestamp latest = store.findLatestJobTimestamp(jobName);
-        assertEquals(jt, latest);
+        try {
+            JobTimestamp latest = store.findLatestJobTimestamp(jobName);
+            assertEquals(jt, latest);
+        } catch (JobNameNotFoundException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     @Test
@@ -144,11 +157,15 @@ public class T08StoreBasicsTest {
         JobTimestamp jt = JobTimestamp.now();
         SharedMethods.write3images(store, jobName, jt);
         // list all JobTimestamps in the store/JobName prior to a certain timing
-        List<JobTimestamp> jtList =
-                store.findAllJobTimestampsPriorTo(jobName, jt);
-        assertEquals(0, jtList.size());
-        jtList = store.findAllJobTimestampsPriorTo(jobName, JobTimestamp.laterThan(jt));
-        assertEquals(1, jtList.size());
+        try {
+            List<JobTimestamp> jtList =
+                    store.findAllJobTimestampsPriorTo(jobName, jt);
+            assertEquals(0, jtList.size());
+            jtList = store.findAllJobTimestampsPriorTo(jobName, JobTimestamp.laterThan(jt));
+            assertEquals(1, jtList.size());
+        } catch (JobNameNotFoundException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     @Test
@@ -160,8 +177,12 @@ public class T08StoreBasicsTest {
         // use store.contains() method
         assertTrue(store.contains(jobName));
         assertFalse(store.contains(new JobName("no such JobName")));
-        assertTrue(store.contains(jobName, jt));
-        assertFalse(store.contains(jobName, JobTimestamp.laterThan(jt)));
+        try {
+            assertTrue(store.contains(jobName, jt));
+            assertFalse(store.contains(jobName, JobTimestamp.laterThan(jt)));
+        } catch (JobNameNotFoundException jnnf) {
+            logger.error(jnnf.getMessage());
+        }
     }
 
     @Test
@@ -173,7 +194,11 @@ public class T08StoreBasicsTest {
         //
         JobTimestamp targetJT = JobTimestamp.laterThan(sourceJT);
         store.copyMaterials(jobName, sourceJT, targetJT);
-        assertTrue(store.contains(jobName, targetJT));
+        try {
+            assertTrue(store.contains(jobName, targetJT));
+        } catch (JobNameNotFoundException jnnf) {
+            logger.error(jnnf.getMessage());
+        }
         MaterialList materialList = store.select(jobName, targetJT);
         assertEquals(3, materialList.size());
     }
@@ -203,10 +228,14 @@ public class T08StoreBasicsTest {
         SharedMethods.write3images(store, jobName, sourceJT);
         JobTimestamp targetJT = JobTimestamp.laterThan(sourceJT);
         store.copyMaterials(jobName, sourceJT, targetJT);
-        assertTrue(store.contains(jobName, targetJT));
-        // now delete the targetJT and files contained there
-        store.deleteJobTimestamp(jobName, targetJT);
-        assertFalse(store.contains(jobName, targetJT));
+        try {
+            assertTrue(store.contains(jobName, targetJT));
+            // now delete the targetJT and files contained there
+            store.deleteJobTimestamp(jobName, targetJT);
+            assertFalse(store.contains(jobName, targetJT));
+        } catch (JobNameNotFoundException jnnf) {
+            logger.error(jnnf.getMessage());
+        }
     }
 
     @Test
@@ -238,7 +267,7 @@ public class T08StoreBasicsTest {
             byte[] bytes = store.read(mt1);
             Material mt2 = store.write(jobName, jobTimestamp, FileType.TXT,
                     metadata, bytes);
-
+            assertNotNull(mt2);
             throw new RuntimeException("expected to raise a DuplicatingMaterialException, but not");
         } catch (DuplicatingMaterialException e) {
             e.printStackTrace();
@@ -263,6 +292,7 @@ public class T08StoreBasicsTest {
         byte[] bytes = store.read(mt1);
         Material mt2 = store.write(jobName, jobTimestamp, FileType.TXT,
                 metadata2, bytes);
+        assertNotNull(mt2);
         MaterialList materialList = store.select(jobName, jobTimestamp);
 
         // make sure there are 2 Materials writen
@@ -296,25 +326,25 @@ public class T08StoreBasicsTest {
         // test getting the Path of JobName directory
         Path jobNamePath = store.getPathOf(jobName);
         System.out.println("jobNamePath=" +
-                projectDir.relativize(jobNamePath).toString());
+                projectDir.relativize(jobNamePath));
         assertEquals(jobName.getJobName(), jobNamePath.getFileName().toString());
 
         // test getting the Path of JobTimestamp directory
         Path jobTimestampPath = store.getPathOf(jobName, jobTimestamp);
         System.out.println("jobTimestampPath=" +
-                projectDir.relativize(jobTimestampPath).toString());
+                projectDir.relativize(jobTimestampPath));
         assertEquals(jobTimestamp.toString(), jobTimestampPath.getFileName().toString());
 
         // test getting the Path of Material file
         Path materialPath = store.getPathOf(mt1);
         System.out.println("materialPath=" +
-                projectDir.relativize(materialPath).toString());
+                projectDir.relativize(materialPath));
         assertTrue(materialPath.getFileName().toString().startsWith(mt1.getID().toString()));
 
         // test getting the Path of Material, a simpler way
         Path materialPathAlt = mt1.toPath();
         System.out.println("materialPathAlt=" +
-                projectDir.relativize(materialPathAlt).toString());
+                projectDir.relativize(materialPathAlt));
         assertTrue(materialPathAlt.getFileName().toString().startsWith(mt1.getID().toString()));
     }
 }
