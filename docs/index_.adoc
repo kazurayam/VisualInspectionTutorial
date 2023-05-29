@@ -1,7 +1,11 @@
 = Materialstore Tutorial
 
+Table of Contents
+{:toc}
+
 * link:https://kazurayam.github.io/materialstore/api/index.html[materialstore API javadoc]
 * back to the link:https://github.com/kazurayam/materialstore[materialstore repository]
+
 
 include::tut00.adoc[]
 
