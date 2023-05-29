@@ -1,6 +1,6 @@
 = Materialstore Tutorial
 
-Table of Contents
+* Table of Contents
 {:toc}
 
 * link:https://kazurayam.github.io/materialstore/api/index.html[materialstore API javadoc]
