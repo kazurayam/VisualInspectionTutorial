@@ -31,12 +31,15 @@ test {
     useJUnitPlatform()
 }
 
-task compileTutorial {
-    // run docs/indexconv.sh to generate index.md from index_.adoc
+/**
+ * translate docs/index_.adoc to docs/index.md
+ * with instruction to Jekyll Blog to generate TOC
+ */
+task gendocs {
     doLast {
         exec {
             workingDir './docs'
-            commandLine './indexconv.sh', '-t'
+            commandLine './adoc2md.sh', '-t'
         }
     }
 }

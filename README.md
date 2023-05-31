@@ -12,6 +12,6 @@ These 2 libraries are designed to implement what kazurayam call "Visual Inspecti
 - https://github.com/kazurayam/materialstore
 - https://github.com/kazurayam/inspectus
 
-## The doc
+## Link to the document
 
 See https://kazurayam.github.io/materialstore-tutorial/ for the document

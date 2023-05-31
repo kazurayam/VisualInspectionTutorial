@@ -1,4 +1,4 @@
-- TOC
+- Table of contents
 {:toc}
 
 # Materialstore Tutorial
