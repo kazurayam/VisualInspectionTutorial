@@ -2,7 +2,7 @@
 
 We will read the code of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09SeleniumShootingsTest.java[`my.sample.T09SeleniumShootingsTest`].
 
-In this section, I will explain a Java code opens web pages in a browser, take screenshots of the pages, and save the PNG files into the `store` directory associating Metadata with each Material objects. The code uses link:https://www.selenium.dev/documentation/webdriver/[WebDriver] library to automate interactions with web browser and tak screenshots. Once screenshots are taken, the code uses the materialstore library to persist the images into disk, and compile a HTML report.
+The sample code opens some web pages in a browser, take screenshots of the pages, and save the PNG files into the `store` directory associating Metadata with each Material objects. The code uses link:https://www.selenium.dev/documentation/webdriver/[WebDriver] library to automate interactions with web browser and tak screenshots. It persists the images into the "store" directory on disk using the materialstore library. Eventually it compiles an HTML report using the materialstore library.
 
 === WebDriver
 

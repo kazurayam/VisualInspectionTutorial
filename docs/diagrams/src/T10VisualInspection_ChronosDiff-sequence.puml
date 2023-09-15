@@ -1,0 +1,65 @@
+@startuml sequence
+actor       tester           as tester
+participant "test script"    as script
+participant "test script/fn" as fn
+participant Inspectus        as inspectus
+participant Materialstore    as materialstore
+database    "store"          as store
+database    "backup"         as backup
+participant "WebDriver"      as driver
+participant "browser"        as browser
+database    "website"        as site
+
+tester        -> script     : run it
+script        -> inspectus  : call it
+activate inspectus
+inspectus     -> backup     : step1 restore previous
+store         <- backup
+deactivate inspectus
+fn            <- inspectus  : step2 materialize
+activate fn
+fn            -> driver     : open browser
+driver        -> browser    : open
+fn            -> browser    : repeat: visit page
+activate fn #ffccdd
+browser       -> site       : GET page
+site          -> browser    : respond page
+fn            <- browser
+fn            -> browser    : take screenshot
+fn            <- browser
+fn            -> materialstore : write image into the store
+materialstore -> store      : write
+deactivate fn
+fn            -> driver     : close browser
+driver        -> browser    : close
+fn            -> inspectus  : finished
+deactivate fn
+
+inspectus     -> materialstore : step3 make pairs of images to take diff
+activate inspectus
+materialstore -> store
+deactivate inspectus
+
+inspectus     -> materialstore : step4 compile report
+activate inspectus
+materialstore -> store
+deactivate inspectus
+
+inspectus     -> materialstore : step5 backup latest
+activate inspectus
+materialstore -> store
+store         -> backup
+deactivate inspectus
+
+inspectus     -> materialstore : step6 cleanup
+activate inspectus
+materialstore -> store
+deactivate inspectus
+
+inspectus     -> materialstore : step7 create index.html
+activate inspectus
+materialstore -> store
+deactivate inspectus
+
+script        -> tester     : say done
+@enduml

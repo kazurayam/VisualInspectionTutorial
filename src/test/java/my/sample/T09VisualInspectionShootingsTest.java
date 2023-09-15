@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Take 3 screenshots to store images into the store.
  * Will compile a Shootings report in HTML.
  */
-public class T09SeleniumShootingsTest {
+public class T09VisualInspectionShootingsTest {
 
     private static Path outputDir;
     private WebDriver driver;
@@ -53,7 +53,7 @@ public class T09SeleniumShootingsTest {
     static void beforeAll() throws IOException {
         Path projectDir = Paths.get(".").toAbsolutePath();
         outputDir = projectDir.resolve("build/tmp/testOutput")
-                .resolve(T09SeleniumShootingsTest.class.getName());
+                .resolve(T09VisualInspectionShootingsTest.class.getName());
         if (Files.exists(outputDir)) {
             FileUtils.deleteDirectory(outputDir.toFile());
         }

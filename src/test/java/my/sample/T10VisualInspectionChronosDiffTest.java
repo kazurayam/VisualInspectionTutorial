@@ -52,8 +52,8 @@ import java.util.function.BiFunction;
  * compare the products of the previous run and the current run,
  * generates a diff information, and compile a HTML report.
  */
-public class T11SeleniumChronosDiffTest {
-    private final Logger logger = LoggerFactory.getLogger(T11SeleniumChronosDiffTest.class);
+public class T10VisualInspectionChronosDiffTest {
+    private final Logger logger = LoggerFactory.getLogger(T10VisualInspectionChronosDiffTest.class);
     private static Path outputDir;
     private WebDriver driver;
     private WebDriverFormulas wdf;
@@ -62,7 +62,7 @@ public class T11SeleniumChronosDiffTest {
     static void beforeAll() throws IOException {
         Path projectDir = Paths.get(".").toAbsolutePath();
         outputDir = projectDir.resolve("build/tmp/testOutput")
-                .resolve(T11SeleniumChronosDiffTest.class.getName());
+                .resolve(T10VisualInspectionChronosDiffTest.class.getName());
         if (Files.exists(outputDir)) {
             FileUtils.deleteDirectory(outputDir.toFile());
         }
