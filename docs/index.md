@@ -52,38 +52,34 @@ Then you will find a file `sampleProject/settings.gradle` has been created, whic
 
 You will also find a file `sampleProject/build.gradle` file, but it will be empty (comments only). So you want to edit it, like this.
 
-**build.gradle**
+**settings.gradle**
 
-    plugins {
-        id 'java'
+    // settings.gradle
+
+    rootProject.name = 'materialstore-tutorial'
+
+    dependencyResolutionManagement {
+        versionCatalogs {
+            libs {
+                version('junit5', '5.10.0')
+                library('junit-jupiter-api', 'org.junit.jupiter', 'junit-jupiter-api').versionRef('junit5')
+                library('junit-jupiter-engine', 'org.junit.jupiter', 'junit-jupiter-engine').versionRef('junit5')
+
+                version('inspectus', '0.10.0')
+                library('inspectus', 'com.kazurayam', 'inspectus'). versionRef('inspectus')
+
+                version('selenium4', '4.12.1')
+                library('selenium4', 'org.seleniumhq.selenium', 'selenium-java').versionRef('selenium4')
+
+                version('webdrivermanager', '5.5.3')
+                library('webdrivermanager', 'io.github.bonigarcia', 'webdrivermanager').versionRef('webdrivermanager')
+
+                version('ashotwrapper', '0.2.2')
+                library('ashotwrapper', 'com.kazurayam', 'ashotwrapper').versionRef('ashotwrapper')
+
+            }
+        }
     }
-
-    group 'com.kazurayam'
-    version '0.3.0'
-
-    repositories {
-        mavenCentral()
-        mavenLocal()
-    }
-
-    dependencies {
-        testImplementation libs.inspectus
-        testImplementation libs.slf4j.api
-        testImplementation libs.selenium4
-        testImplementation libs.ashotwrapper
-        testImplementation libs.slf4j.simple
-        testImplementation libs.webdrivermanager
-        testImplementation libs.guava
-        testImplementation libs.commonsio
-        testImplementation libs.junit.jupiter.api
-        testRuntimeOnly libs.junit.jupiter.engine
-
-        //testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.6-SNAPSHOT'
-        testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-        testImplementation group: 'commons-io', name: 'commons-io', version: '2.12.0'
-    }
-
-    test {
 
 Please note that in the build.gradle we declared the dependency to the `materialstore` library, which is published at the Maven Central repository.
 
@@ -1588,7 +1584,7 @@ These methods are used by the [`inspectus`](https://github.com/kazurayam/inspect
 
 We will read the code of [`my.sample.T09SeleniumShootingsTest`](https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09SeleniumShootingsTest.java).
 
-In this section, I will explain a Java code opens web pages in a browser, take screenshots of the pages, and save the PNG files into the `store` directory associating Metadata with each Material objects. The code uses [WebDriver](https://www.selenium.dev/documentation/webdriver/) library to automate interactions with web browser and tak screenshots. Once screenshots are taken, the code uses the materialstore library to persist the images into disk, and compile a HTML report.
+The sample code opens some web pages in a browser, take screenshots of the pages, and save the PNG files into the `store` directory associating Metadata with each Material objects. The code uses [WebDriver](https://www.selenium.dev/documentation/webdriver/) library to automate interactions with web browser and tak screenshots. It persists the images into the "store" directory on disk using the materialstore library. Eventually it compiles an HTML report using the materialstore library.
 
 ### WebDriver
 
@@ -1598,7 +1594,7 @@ I assume that you have enough knowledge about `WebDriver`. If not, please get in
 
 ### the sample code
 
-Have a look at the source of [`my.sample.T09SeleniumShootingsTest`](https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09SeleniumShootingsTest.java)
+Have a look at the source of [`my.sample.T09VisualInspectuionShootingsTest`](https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09VisualInspectionShootingsTest.java)
 
     package my.sample;
 
@@ -1645,7 +1641,7 @@ Have a look at the source of [`my.sample.T09SeleniumShootingsTest`](https://gith
      * Take 3 screenshots to store images into the store.
      * Will compile a Shootings report in HTML.
      */
-    public class T09SeleniumShootingsTest {
+    public class T09VisualInspectionShootingsTest {
 
         private static Path outputDir;
         private WebDriver driver;
@@ -1655,7 +1651,7 @@ Have a look at the source of [`my.sample.T09SeleniumShootingsTest`](https://gith
         static void beforeAll() throws IOException {
             Path projectDir = Paths.get(".").toAbsolutePath();
             outputDir = projectDir.resolve("build/tmp/testOutput")
-                    .resolve(T09SeleniumShootingsTest.class.getName());
+                    .resolve(T09VisualInspectionShootingsTest.class.getName());
             if (Files.exists(outputDir)) {
                 FileUtils.deleteDirectory(outputDir.toFile());
             }
@@ -1747,7 +1743,7 @@ Have a look at the source of [`my.sample.T09SeleniumShootingsTest`](https://gith
         };
     }
 
-The `T09SeleniumShootingsTest` class calls some helper classes:
+The `T09VisualInspectionShootingsTest` class calls some helper classes:
 
 -   [`my.sample.MaterializeUtils`](https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/MaterializeUtils.java)
 
@@ -1761,7 +1757,7 @@ The code depends on several external libraries
 
 -   [inspectus](https://github.com/kazurayam/inspectus)
 
-By running `my.sample.T9SeleniumShootingTest` I got an HTML report:
+By running `my.sample.T9VisualInspectionShootingTest` I got an HTML report:
 
 -   link:
 

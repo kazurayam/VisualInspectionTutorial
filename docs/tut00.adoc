@@ -52,10 +52,11 @@ rootProject.name = 'sampleProject'
 You will also find a file `sampleProject/build.gradle` file, but it will be empty (comments only). So you want to edit it, like this.
 
 [source, gradle]
-.build.gradle
+.settings.gradle
 ----
-include::../build.gradle[lines=1..30]
+include::../settings.gradle[]
 ----
+
 
 Please note that in the build.gradle we declared the dependency to the `materialstore` library, which is published at the Maven Central repository.
 

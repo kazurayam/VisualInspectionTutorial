@@ -12,15 +12,15 @@ I assume that you have enough knowledge about `WebDriver`. If not, please get in
 
 === the sample code
 
-Have a look at the source of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09SeleniumShootingsTest.java[`my.sample.T09SeleniumShootingsTest`]
+Have a look at the source of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09VisualInspectionShootingsTest.java[`my.sample.T09VisualInspectuionShootingsTest`]
 
 [source]
 ----
-include::../src/test/java/my/sample/T09SeleniumShootingsTest.java[]
+include::../src/test/java/my/sample/T09VisualInspectionShootingsTest.java[]
 ----
 
 
-The `T09SeleniumShootingsTest` class calls some helper classes:
+The `T09VisualInspectionShootingsTest` class calls some helper classes:
 
 - link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/MaterializeUtils.java[`my.sample.MaterializeUtils`]
 - link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/SharedMethods.java[`my.sample.SharedMethods`]
@@ -31,7 +31,7 @@ The code depends on several external libraries
 - link:https://github.com/kazurayam/ashotwrapper[AShotWrapper]
 - link:https://github.com/kazurayam/inspectus[inspectus]
 
-By running `my.sample.T9SeleniumShootingTest` I got an HTML report:
+By running `my.sample.T9VisualInspectionShootingTest` I got an HTML report:
 
 - link:
 
