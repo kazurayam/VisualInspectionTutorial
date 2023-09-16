@@ -1,3 +1,5 @@
+// build.gradle
+
 plugins {
     id 'java'
 }
@@ -11,20 +13,12 @@ repositories {
 }
 
 dependencies {
-    testImplementation libs.inspectus
-    testImplementation libs.slf4j.api
-    testImplementation libs.selenium4
-    testImplementation libs.ashotwrapper
-    testImplementation libs.slf4j.simple
-    testImplementation libs.webdrivermanager
-    testImplementation libs.guava
-    testImplementation libs.commonsio
     testImplementation libs.junit.jupiter.api
     testRuntimeOnly libs.junit.jupiter.engine
-
-    //testImplementation group: 'com.kazurayam', name: 'materialstore', version: '0.16.6-SNAPSHOT'
-    testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-    testImplementation group: 'commons-io', name: 'commons-io', version: '2.12.0'
+    testImplementation libs.inspectus
+    testImplementation libs.selenium4
+    testImplementation libs.webdrivermanager
+    testImplementation libs.ashotwrapper
 }
 
 test {
