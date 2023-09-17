@@ -1,4 +1,4 @@
-== Taking screenshots of a website and compile a report as HTML
+== 9th example: Taking screenshots of a website and compile a report as HTML
 
 We will read the code of link:https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09SeleniumShootingsTest.java[`my.sample.T09SeleniumShootingsTest`].
 

@@ -1,3 +1,3 @@
-== 9th example: Comparing 2 environments of a Web system visually : Twins Diff
+== 11th example: Comparing 2 environments of a Web application visually : Twins Diff
 
 TO AUTHOR YET

@@ -1,26 +1,3 @@
 // settings.gradle
 
-rootProject.name = 'materialstore-tutorial'
-
-dependencyResolutionManagement {
-    versionCatalogs {
-        libs {
-            version('junit5', '5.10.0')
-            library('junit-jupiter-api', 'org.junit.jupiter', 'junit-jupiter-api').versionRef('junit5')
-            library('junit-jupiter-engine', 'org.junit.jupiter', 'junit-jupiter-engine').versionRef('junit5')
-
-            version('inspectus', '0.10.0')
-            library('inspectus', 'com.kazurayam', 'inspectus'). versionRef('inspectus')
-
-            version('selenium4', '4.12.1')
-            library('selenium4', 'org.seleniumhq.selenium', 'selenium-java').versionRef('selenium4')
-
-            version('webdrivermanager', '5.5.3')
-            library('webdrivermanager', 'io.github.bonigarcia', 'webdrivermanager').versionRef('webdrivermanager')
-
-            version('ashotwrapper', '0.2.2')
-            library('ashotwrapper', 'com.kazurayam', 'ashotwrapper').versionRef('ashotwrapper')
-
-        }
-    }
-}
+rootProject.name = 'VisualInspectionTutorial'

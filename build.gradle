@@ -4,23 +4,19 @@ plugins {
     id 'java'
 }
 
-group 'com.kazurayam'
-version '0.3.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 dependencies {
-    testImplementation libs.junit.jupiter.api
-    testRuntimeOnly libs.junit.jupiter.engine
-    testImplementation libs.selenium4
-    testImplementation libs.webdrivermanager
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.0'
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.0'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.12.1'
+    testImplementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.5.3'
 
     // kazurayam's products
-    testImplementation libs.inspectus
-    testImplementation libs.ashotwrapper
+    testImplementation group: 'com.kazurayam', name: 'inspectus', version: '0.10.0'
+    testImplementation group: 'com.kazurayam', name: 'ashotwrapper', version: '0.2.2'
 }
 
 test {

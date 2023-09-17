@@ -50,65 +50,32 @@ Then you will find a file `sampleProject/settings.gradle` has been created, whic
 
 You will also find a file `sampleProject/build.gradle` file, but it will be empty (comments only). So you want to edit it, like this.
 
-**settings.gradle**
+**build.gradle**
 
-    // settings.gradle
+    // build.gradle
 
-    rootProject.name = 'materialstore-tutorial'
-
-    dependencyResolutionManagement {
-        versionCatalogs {
-            libs {
-                version('junit5', '5.10.0')
-                library('junit-jupiter-api', 'org.junit.jupiter', 'junit-jupiter-api').versionRef('junit5')
-                library('junit-jupiter-engine', 'org.junit.jupiter', 'junit-jupiter-engine').versionRef('junit5')
-
-                version('inspectus', '0.10.0')
-                library('inspectus', 'com.kazurayam', 'inspectus'). versionRef('inspectus')
-
-                version('selenium4', '4.12.1')
-                library('selenium4', 'org.seleniumhq.selenium', 'selenium-java').versionRef('selenium4')
-
-                version('webdrivermanager', '5.5.3')
-                library('webdrivermanager', 'io.github.bonigarcia', 'webdrivermanager').versionRef('webdrivermanager')
-
-                version('ashotwrapper', '0.2.2')
-                library('ashotwrapper', 'com.kazurayam', 'ashotwrapper').versionRef('ashotwrapper')
-
-            }
-        }
+    plugins {
+        id 'java'
     }
 
-Please note that in the build.gradle we declared the dependency to the `materialstore` library, which is published at the Maven Central repository.
+    repositories {
+        mavenCentral()
+    }
 
--   <https://mvnrepository.com/artifact/com.kazurayam/materialstore>
+    dependencies {
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.0'
+        testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.0'
+        testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.12.1'
+        testImplementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.5.3'
 
-You can check if the project is properly setup by executing a command, as follows:
+        // kazurayam's products
+        testImplementation group: 'com.kazurayam', name: 'inspectus', version: '0.10.0'
+        testImplementation group: 'com.kazurayam', name: 'ashotwrapper', version: '0.2.2'
+    }
 
-    $ cd ~/tmp/sampleProject/
-    $ gradle dependencies --configuration testImplementation
-
-    > Task :dependencies
-
-    ------------------------------------------------------------
-    Root project 'materialstore-tutorial'
-    ------------------------------------------------------------
-
-    testImplementation - Implementation only dependencies for source set 'test'. (n)
-    +--- com.kazurayam:materialstore:0.16.5 (n)
-    +--- org.freemarker:freemarker:2.3.31 (n)
-    +--- com.google.guava:guava:31.1-jre (n)
-    +--- com.google.code.gson:gson:2.8.9 (n)
-    +--- org.slf4j:slf4j-api:1.7.25 (n)
-    +--- org.slf4j:slf4j-simple:1.7.25 (n)
-    \--- org.junit.jupiter:junit-jupiter-api:5.9.2 (n)
-
-    (n) - A dependency or dependency configuration that cannot be resolved.
-
-    A web-based, searchable dependency report is available by adding the --scan option.
-
-    BUILD SUCCESSFUL in 1s
-    1 actionable task: 1 executed
+    test {
+        useJUnitPlatform()
+    }
 
 ## 1st example: "Hello, materialstore!"
 
@@ -1582,7 +1549,7 @@ Each instance of **JobName**, **JobTimestamp** and **Material** have correspondi
 
 These methods are used by the [`inspectus`](https://github.com/kazurayam/inspectus) library in order to implement what I call **Visual Inspection** --- comparing 2 sets of Material to find differences. These methods encapsulate the complicated processing details; so I would not cover them here in this tutorial for the materialstore library.
 
-## Taking screenshots of a website and compile a report as HTML
+## 9th example: Taking screenshots of a website and compile a report as HTML
 
 We will read the code of [`my.sample.T09SeleniumShootingsTest`](https://github.com/kazurayam/materialstore-tutorial/blob/develop/src/test/java/my/sample/T09SeleniumShootingsTest.java).
 
@@ -1763,10 +1730,10 @@ By running `my.sample.T9VisualInspectionShootingTest` I got an HTML report:
 
 -   link:
 
-## 9th example: Comparing 2 environments of a Web system visually : Twins Diff
+## 10th example: Comparing a Web application visually before and after a planned change : Chronos Diff
 
 TO AUTHOR YET
 
-## 10th example: Comparing a Web system visually before and after a planned change : Chronos Diff
+## 11th example: Comparing 2 environments of a Web application visually : Twins Diff
 
 TO AUTHOR YET

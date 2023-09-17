@@ -52,42 +52,7 @@ rootProject.name = 'sampleProject'
 You will also find a file `sampleProject/build.gradle` file, but it will be empty (comments only). So you want to edit it, like this.
 
 [source, gradle]
-.settings.gradle
+.build.gradle
 ----
-include::../settings.gradle[]
-----
-
-
-Please note that in the build.gradle we declared the dependency to the `materialstore` library, which is published at the Maven Central repository.
-
-* https://mvnrepository.com/artifact/com.kazurayam/materialstore
-
-You can check if the project is properly setup by executing a command, as follows:
-
-[source]
-----
-$ cd ~/tmp/sampleProject/
-$ gradle dependencies --configuration testImplementation
-
-> Task :dependencies
-
-------------------------------------------------------------
-Root project 'materialstore-tutorial'
-------------------------------------------------------------
-
-testImplementation - Implementation only dependencies for source set 'test'. (n)
-+--- com.kazurayam:materialstore:0.16.5 (n)
-+--- org.freemarker:freemarker:2.3.31 (n)
-+--- com.google.guava:guava:31.1-jre (n)
-+--- com.google.code.gson:gson:2.8.9 (n)
-+--- org.slf4j:slf4j-api:1.7.25 (n)
-+--- org.slf4j:slf4j-simple:1.7.25 (n)
-\--- org.junit.jupiter:junit-jupiter-api:5.9.2 (n)
-
-(n) - A dependency or dependency configuration that cannot be resolved.
-
-A web-based, searchable dependency report is available by adding the --scan option.
-
-BUILD SUCCESSFUL in 1s
-1 actionable task: 1 executed
+include::../build.gradle[lines=1..24]
 ----
