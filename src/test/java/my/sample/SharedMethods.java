@@ -47,7 +47,7 @@ public class SharedMethods {
     public static void write3images(Store store, JobName jn, JobTimestamp jt)          // (16)
             throws MaterialstoreException {
         String prefix =
-                "https://kazurayam.github.io/materialstore-tutorial/images/tutorial/";
+                "https://kazurayam.github.io/VisualInspectionTutorial/images/tutorial/";
         // Apple
         URL url1 = SharedMethods.createURL(prefix + "03_apple.png");
         store.write(jn, jt, FileType.PNG,
