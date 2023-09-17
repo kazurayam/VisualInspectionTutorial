@@ -1,13 +1,11 @@
 - Table of contents
 {:toc}
 
-# Materialstore Tutorial
+# Visual Inspection Tutorial
 
--   [materialstore API javadoc](https://kazurayam.github.io/materialstore/api/index.html)
+-   back to the [the repository](https://github.com/kazurayam/VisualInspectionTutorial)
 
--   back to the [materialstore repository](https://github.com/kazurayam/materialstore)
-
-This is an introduction to a Java library named `materialstore` that I (kazurayam) developed.
+This document describes two Java libraries: `materialstore` and `inspectus` that I developed.
 
 ## Setting up a project
 
@@ -416,8 +414,8 @@ We are going to read the code of
         public void test02_write_image_with_metadata() throws MaterialstoreException {
             JobName jobName = new JobName("test02_write_image_with_metadata");
             JobTimestamp jobTimestamp = JobTimestamp.now();
-            URL url = SharedMethods.createURL(                     // (10)
-                    "https://kazurayam.github.io/materialstore-tutorial/images/tutorial/03_apple.png");
+            URL url = SharedMethods.createURL(
+                    SharedMethods.IMAGE_URL_PREFIX + "03_apple.png");  // (10)
             byte[] bytes = SharedMethods.downloadUrlToByteArray(url);         // (11)
             Material material =
                     store.write(jobName, jobTimestamp,             // (12)
@@ -433,11 +431,11 @@ We are going to read the code of
                     + material.getDescription());                   // (14)
 
             assertEquals(FileType.PNG, material.getFileType());
-            assertEquals("https",
+            assertEquals(url.getProtocol(),
                     material.getMetadata().get("URL.protocol"));
-            assertEquals("kazurayam.github.io",
+            assertEquals(url.getHost(),
                     material.getMetadata().get("URL.host"));        // (15)
-            assertEquals("/materialstore-tutorial/images/tutorial/03_apple.png",
+            assertEquals(url.getPath(),
                     material.getMetadata().get("URL.path"));
             assertEquals("01", material.getMetadata().get("step"));
         }
@@ -451,18 +449,25 @@ I create a helper class named `my.sample.SharedMethod` with a method `createURL(
 
     public class SharedMethods {
 
+        public static final String IMAGE_URL_PREFIX =
+                "https://kazurayam.github.io/VisualInspectionTutorial/images/tutorial/";
+
         public static URL createURL(String urlString) throws MaterialstoreException {
             try {
-                return new URL(urlString);
-            } catch (MalformedURLException e) {
-                throw new MaterialstoreException(e);
 
 At the statement (11) we get access to the URL. We will effectively download a PNG image file from the URL and obtain a large array of bytes.
 The `downloadURL(URL)` method of `SharedMethods` class implements this processing: converting a URL to an array of bytes.
 
 **downloadUrl(URL)**
 
+                return new URL(urlString);
+            } catch (MalformedURLException e) {
+                throw new MaterialstoreException(e);
             }
+        }
+
+        public static URL createSampleImageURL(String imageFile) throws MaterialstoreException {
+            return createURL(IMAGE_URL_PREFIX + imageFile);
         }
 
         public static byte[] downloadUrlToByteArray(URL toDownload) {
@@ -474,13 +479,6 @@ The `downloadURL(URL)` method of `SharedMethods` class implements this processin
                 while ((bytesRead = stream.read(chunk)) > 0) {
                     outputStream.write(chunk, 0, bytesRead);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-            byte[] bytes = outputStream.toByteArray();
-            assert bytes.length != 0;
-            return bytes;
 
 The statement (12) invokes `store.write()` method, which create a new file tree, as this:
 
@@ -549,7 +547,6 @@ We are going to read the code of
 
 This class downloads 3 PNG image files from public URL and store them into the store on the local disk.
 
-    public class T03WriteMultipleImagesTest {
         private Store store;
         @BeforeEach
         public void beforeEach() {
@@ -574,12 +571,18 @@ This code calls `SharedMethods.write3images(Store, JobName, JobTimestap)` method
 
 **SharedMethod.write3images**
 
+                e.printStackTrace();
+                return null;
+            }
+            byte[] bytes = outputStream.toByteArray();
+            assert bytes.length != 0;
+            return bytes;
+        }
+
         public static void write3images(Store store, JobName jn, JobTimestamp jt)          // (16)
                 throws MaterialstoreException {
-            String prefix =
-                    "https://kazurayam.github.io/materialstore-tutorial/images/tutorial/";
             // Apple
-            URL url1 = SharedMethods.createURL(prefix + "03_apple.png");
+            URL url1 = SharedMethods.createURL(IMAGE_URL_PREFIX + "03_apple.png");
             store.write(jn, jt, FileType.PNG,
                     Metadata.builder(url1)
                             .put("step", "01")
@@ -588,7 +591,7 @@ This code calls `SharedMethods.write3images(Store, JobName, JobTimestap)` method
                     SharedMethods.downloadUrlToByteArray(url1));
 
             // Mikan
-            URL url2 = SharedMethods.createURL(prefix + "04_mikan.png");
+            URL url2 = SharedMethods.createURL(IMAGE_URL_PREFIX + "04_mikan.png");
             Map<String, String> m = new HashMap<>();
             m.put("step", "02");
             m.put("label", "mikan");
@@ -599,15 +602,10 @@ This code calls `SharedMethods.write3images(Store, JobName, JobTimestap)` method
                     SharedMethods.downloadUrlToByteArray(url2));
 
             // Money
-            URL url3 = SharedMethods.createURL(prefix + "05_money.png");
+            URL url3 = SharedMethods.createURL(IMAGE_URL_PREFIX + "05_money.png");
             store.write(jn, jt, FileType.PNG,
                     Metadata.builder(url3)
                             .exclude("URL.protocol", "URL.port")
-                            .putAll(ImmutableMap.of("step", "03",
-                                    "label", "money"))
-                            .build(),
-                    SharedMethods.downloadUrlToByteArray(url3));
-        }
 
 This code makes HTTP requests to the following URLs:
 
@@ -636,10 +634,10 @@ Let’s read the code and the index entries and find the details.
 
 ### Metadata.Builder.put(String key, String value)
 
-                    Metadata.builder(url1)
-                            .put("step", "01")
-                            .put("label", "red apple")
-                            .build(),
+        public static void write3images(Store store, JobName jn, JobTimestamp jt)          // (16)
+                throws MaterialstoreException {
+            // Apple
+            URL url1 = SharedMethods.createURL(IMAGE_URL_PREFIX + "03_apple.png");
 
 The above code generated the following Metadata instance:
 
@@ -653,14 +651,14 @@ Other 2 attributes "label" and "step" were created by multiple calls to `.put(St
 
 Instead of calling `.put(String key, String value)` multiple times, you can all `.putAll(Map<String, String>)`, as the sample code does:
 
+                            .build(),
+                    SharedMethods.downloadUrlToByteArray(url1));
+
+            // Mikan
+            URL url2 = SharedMethods.createURL(IMAGE_URL_PREFIX + "04_mikan.png");
             Map<String, String> m = new HashMap<>();
             m.put("step", "02");
             m.put("label", "mikan");
-            store.write(jn, jt, FileType.PNG,
-                    Metadata.builder(url2)
-                            .putAll(m)
-                            .build(),
-                    SharedMethods.downloadUrlToByteArray(url2));
 
 The above code does not look very stylish.　Creating an instance of HashMap class is verbose; unfortunately Java language does not have a Map literal like JSON `{"label": "mikan", "step": "i02"}`). As the second best, you can rewrite this code as follows using Google’s [Guava](https://github.com/google/guava):
 
@@ -678,12 +676,12 @@ The above code does not look very stylish.　Creating an instance of HashMap cla
 
 `Metadata.builder(url)` generates multiple attributes like: `"URL.host":"kazurayam.github.io", "URL.path":"/materialstore-tutorial/images/tutorial/04_mikan.png", "URL.port":"80", "URL.protocol":"https"`. `URL.host` and `URL.path` are always informative. But the `URL.port` is usually `80`, the `URL.protocol` will be either of `http` or `https`. You can exclude any attributes by calling `.exclude(String key…​)`. The following code shows how to:
 
-            store.write(jn, jt, FileType.PNG,
-                    Metadata.builder(url3)
-                            .exclude("URL.protocol", "URL.port")
-                            .putAll(ImmutableMap.of("step", "03",
-                                    "label", "money"))
                             .build(),
+                    SharedMethods.downloadUrlToByteArray(url2));
+
+            // Money
+            URL url3 = SharedMethods.createURL(IMAGE_URL_PREFIX + "05_money.png");
+            store.write(jn, jt, FileType.PNG,
 
 This code generates a Metadata like this:
 
@@ -1175,8 +1173,7 @@ The following code shows how to create a "store" directory, a directory tree wit
 
         @Test
         public void test_write_a_Material_into_the_store() throws MaterialstoreException {
-            URL url = SharedMethods.createURL(
-                    "https://kazurayam.github.io/materialstore-tutorial/images/tutorial/03_apple.png");
+            URL url = SharedMethods.createSampleImageURL("03_apple.png");
             // download the image into byte[]
             byte[] bytes = SharedMethods.downloadUrlToByteArray(url);
             // write the byte[] into the store
@@ -1189,6 +1186,7 @@ The following code shows how to create a "store" directory, a directory tree wit
             assertNotNull(m, "m should not be null");
             System.out.printf("%s\t%s\t%s%n",
                     m.getID(),
+                    m.getFileType().getExtension(),
 
 The `T08StoreBasicsTest` class calls the method of [my.sample.SharedMethods](https://github.com/kazurayam/materialstore-tutorial/blob/master/src/test/java/my/sample/SharedMethods.java) class. Read its code as well.
 
@@ -1229,26 +1227,25 @@ The **store** directory may contain multiple **JobName** directories. A **JobNam
 
 You can read the content of a Material as file by calling `Store.read(Material)` method.
 
-                    m.getFileType().getExtension(),
                     m.getMetadata().getMetadataIdentification().getIdentification());
         }
 
         @Test
         public void test_read_bytes_from_Material() throws MaterialstoreException {
-            URL url = SharedMethods.createURL(
-                    "https://kazurayam.github.io/materialstore-tutorial/images/tutorial/03_apple.png");
+            URL url = SharedMethods.createSampleImageURL("03_apple.png");
             byte[] bytes = SharedMethods.downloadUrlToByteArray(url);
             JobName jobName = new JobName("test_read_bytes_from_Material");
             JobTimestamp jobTimestamp = JobTimestamp.now();
             Metadata metadata = Metadata.builder(url).build();
             Material m = store.write(jobName, jobTimestamp, FileType.PNG, metadata, bytes);
 
+            // read all bytes from the Material
+            byte[] content = store.read(m);
+
 ### Reading all lines of a Material as text
 
 Provided that a Material is a text file, you can read all lines into a `List<String>` by `Store.reaAllLines(Material)`.
 
-            byte[] content = store.read(m);
-            assertTrue(content.length > 0);
         }
 
         @Test
@@ -1258,6 +1255,8 @@ Provided that a Material is a text file, you can read all lines into a `List<Str
             Material m = store.write(jobName, jobTimestamp, FileType.TXT,
                     Metadata.NULL_OBJECT, "aaa\nbbb\nccc\n");
             List<String> lines = store.readAllLines(m);
+            for (String line : lines) {
+                System.out.println(line);
 
 If the Material is a binary file (not a text file) then a MaterialstoreException which wraps an IOException will be raised.
 
@@ -1265,8 +1264,6 @@ If the Material is a binary file (not a text file) then a MaterialstoreException
 
 Under a `store` directory, there could be zero or more **JobName** directories. Then you would naturally want to get a list of the **JobNames**. You can get it by calling `store.findAllJobNames()`.
 
-                System.out.println(line);
-            }
         }
 
         @Test
@@ -1277,6 +1274,8 @@ Under a `store` directory, there could be zero or more **JobName** directories. 
             SharedMethods.write3images(store, jobName, jobTimestamp);
             // list all JobNames in the store
             List<JobName> allJobNames = store.findAllJobNames();
+            for (JobName jn : allJobNames) {
+                System.out.println(jn.toString());
 
 You would see, for example, the following output in the console:
 
@@ -1288,8 +1287,6 @@ You would see, for example, the following output in the console:
 
 Under a **JobName** directory, there could be zero or more **JobTimestamp** directories. Then you would naturally want to get a list of the **JobTimestamps**. You can get it by calling `store.findAllJobTimestamps()`.
 
-                System.out.println(jn.toString());
-            }
         }
 
         @Test
@@ -1300,6 +1297,8 @@ Under a **JobName** directory, there could be zero or more **JobTimestamp** dire
             JobTimestamp jobTimestamp = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, jobTimestamp);
             // list all JobTimestamps in the store/JobName
+            try {
+                List<JobTimestamp> allJobTimestamps = store.findAllJobTimestamps(jobName);
 
 You would see, for example, the following output in the console:
 
@@ -1311,8 +1310,6 @@ You would see, for example, the following output in the console:
 
 Under a **JobName** directory, there could be multiple **JobTimestamp** directories. The name of **JobTimestamp** directories are moving as time goes by. Then you would naturally want a way to find the latest (newest)**JobTimestamp** in a **JobName**. You can get it by calling `store.findLatestJobTimestamps()`.
 
-                List<JobTimestamp> allJobTimestamps = store.findAllJobTimestamps(jobName);
-                for (JobTimestamp jt : allJobTimestamps) {
                     System.out.println(jt.toString());
                 }
             } catch (JobNameNotFoundException e) {
@@ -1321,13 +1318,13 @@ Under a **JobName** directory, there could be multiple **JobTimestamp** director
         }
 
         @Test
+        public void test_findLatestJobTimestamp() throws MaterialstoreException {
+            // create test fixtures
 
 ### Finding JobTimestamps prior to the specified JobTimestamp
 
 You can find a subset of **JobTimestamps** under a **JobName** prior to a specific JobTimestamp value by calling `store.findAllJobTimestampsPriorTo(JobName jobName, JobTimestamp priorTo)`.
 
-            // create test fixtures
-            JobName jobName = new JobName("test_findLatestJobTimestamp");
             JobTimestamp jt = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, jt);
             // find the latest JobTimestamp in the store/JobName
@@ -1339,12 +1336,13 @@ You can find a subset of **JobTimestamps** under a **JobName** prior to a specif
             }
         }
 
+        @Test
+        public void test_findAllJobTimestampsPriorTo() throws MaterialstoreException {
+
 ### Resolving if a specific JobName/JobTimestamp is present
 
 Provided that a `store` file tree is given, you may want to find out if a specific value of **JobName** is present in the file tree. You may also want to find out if a specific value of **JobTimestamp** is present there. You can resolve by calling `store.contains(JobName)` and `store.contains(JobName, JobTimestamp)`.
 
-        public void test_findAllJobTimestampsPriorTo() throws MaterialstoreException {
-            // create test fixtures
             JobName jobName = new JobName("test_findAllJobTimestampsPriorTo");
             JobTimestamp jt = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, jt);
@@ -1355,13 +1353,13 @@ Provided that a `store` file tree is given, you may want to find out if a specif
                 assertEquals(0, jtList.size());
                 jtList = store.findAllJobTimestampsPriorTo(jobName, JobTimestamp.laterThan(jt));
                 assertEquals(1, jtList.size());
+            } catch (JobNameNotFoundException e) {
+                logger.error(e.getMessage());
 
 ### Copying all objects of a JobTimestamp into another JobTimestamp
 
 Provided that a **JobTimestamp** with one or more Material objects in a **JobName**, you can copy all the Materials into another **JobTimestamp** in the **JobName** by calling `store.copyMaterials(JobName jn, JobTimestamp source, JobTimestamp target)`.
 
-                logger.error(e.getMessage());
-            }
         }
 
         @Test
@@ -1373,6 +1371,8 @@ Provided that a **JobTimestamp** with one or more Material objects in a **JobNam
             // use store.contains() method
             assertTrue(store.contains(jobName));
             assertFalse(store.contains(new JobName("no such JobName")));
+            try {
+                assertTrue(store.contains(jobName, jt));
 
 If the **JobTimestamp** as target is not there, a new JobTimestamp will be added. If the **JobTimestamp** as target is already there, the `Store` tries to write the Materials into the specified **JobTimestamp**. Here the "duplication" of Materials in a **JobTimestamp** matters. I will explain about the "duplication" later in more detail.
 
@@ -1380,8 +1380,6 @@ If the **JobTimestamp** as target is not there, a new JobTimestamp will be added
 
 You can take a copy of Material out of the **store** directory, and place it into an arbitrary location in OS filesystem. You can do it by calling `store.retrieve(Material, Path)`. Here `Path` is an instance of [`java.nio.file.Path`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Path.html) class.
 
-                assertTrue(store.contains(jobName, jt));
-                assertFalse(store.contains(jobName, JobTimestamp.laterThan(jt)));
             } catch (JobNameNotFoundException jnnf) {
                 logger.error(jnnf.getMessage());
             }
@@ -1396,13 +1394,13 @@ You can take a copy of Material out of the **store** directory, and place it int
             //
             JobTimestamp targetJT = JobTimestamp.laterThan(sourceJT);
             store.copyMaterials(jobName, sourceJT, targetJT);
+            try {
+                assertTrue(store.contains(jobName, targetJT));
 
 ### Deleting a JobTimestamp directory recursively
 
 You can remove a JobTimestamp directory while deleting all the files contained by `store.deleteJobTimestamp(JobName, JobTimestamp)`.
 
-                assertTrue(store.contains(jobName, targetJT));
-            } catch (JobNameNotFoundException jnnf) {
                 logger.error(jnnf.getMessage());
             }
             MaterialList materialList = store.select(jobName, targetJT);
@@ -1414,13 +1412,13 @@ You can remove a JobTimestamp directory while deleting all the files contained b
             // create test fixtures
             JobName jobName = new JobName("test_retrieve");
             JobTimestamp jobTimestamp = JobTimestamp.now();
+            SharedMethods.write3images(store, jobName, jobTimestamp);
+            Material apple = store.selectSingle(jobName, jobTimestamp, FileType.PNG,
 
 ### Deleting a JobName directory recursively
 
 You can remove a JobName directory while deleting all JobTimestamp directories by `store.deleteJobName(JobName)`.
 
-            Material apple = store.selectSingle(jobName, jobTimestamp, FileType.PNG,
-                    QueryOnMetadata.builder().put("label", "red apple").build());
             assertNotNull(apple);
             //
             Path outFile = Paths.get(System.getProperty("user.home"))
@@ -1430,14 +1428,15 @@ You can remove a JobName directory while deleting all JobTimestamp directories b
             assertTrue(outFile.toFile().length() > 0);
         }
 
+        @Test
+        public void test_deleteJobTimestamp() throws MaterialstoreException {
+
 ### You can not create 2 Materials with the same FileType and Metadata
 
 A single Material is not identified by the ID (40 hex-decimal characters derived from the file content by SHA1 Message signature). A single Material is identified by the combination of FileType and the Metadata associate to each Material. You can not create 2 Materials with the same FileType and Metadata in a single JobTimestamp.
 
 The following code demonstrate that you will get an Exception when you try to write a duplicating Material into a JobTimestamp directory.
 
-        public void test_deleteJobTimestamp() throws MaterialstoreException {
-            // create test fixtures
             JobName jobName = new JobName("test_deleteJobTimestamp");
             JobTimestamp sourceJT = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, sourceJT);
@@ -1459,6 +1458,8 @@ The following code demonstrate that you will get an Exception when you try to wr
             JobName jobName = new JobName("test_deleteJobName");
             JobTimestamp sourceJT = JobTimestamp.now();
             SharedMethods.write3images(store, jobName, sourceJT);
+            assertTrue(store.contains(jobName));
+            // now delete the JobName and files contained there
 
     > Task :test
     com.kazurayam.materialstore.core.DuplicatingMaterialException: The combination of fileType=txt and metadata={"foo":"bar", "URL.host":"github.com", "URL.path":"/kazurayam/materialstore-tutorial", "URL.port":"80", "URL.protocol":"https"} is already there in the index.
@@ -1474,8 +1475,6 @@ The following code demonstrate that you will get an Exception when you try to wr
 
 However, in a single JobTimestamp, you can create another Material of duplicating byte contents as far as you associate a unique Metadata to each.
 
-            // now delete the JobName and files contained there
-            store.deleteJobName(jobName);
             assertFalse(store.contains(jobName));
         }
 
@@ -1485,7 +1484,7 @@ However, in a single JobTimestamp, you can create another Material of duplicatin
             // create test fixtures
             JobName jobName = new JobName("test_unable_to_write_material_with_duplicating_Metadata");
             JobTimestamp jobTimestamp = JobTimestamp.now();
-            URL url = new URL("https://github.com/kazurayam/materialstore-tutorial");
+            URL url = new URL(SharedMethods.IMAGE_URL_PREFIX);
             Metadata metadata = Metadata.builder(url).put("foo", "bar").build();
             Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
                     metadata, "Hello, Materialstore!");
@@ -1502,6 +1501,9 @@ However, in a single JobTimestamp, you can create another Material of duplicatin
                 e.printStackTrace();
             }
         }
+
+        @Test
+        public void test_able_to_write_materials_with_unique_Metadata()
 
 When I ran this test, I got the following result.
 
@@ -1521,19 +1523,17 @@ Please note the following 2 points:
 
 When you construct an instance of `com.kazurayam.materialstore.core.Store` class, you need to specify an instance of `java.nio.file.Path` as argument. Obviously, you can retrieve the Path out of the Store instance by calling `store.getRoot()`.
 
-        public void test_able_to_write_materials_with_unique_Metadata()
-                throws MalformedURLException, MaterialstoreException {
             // create test fixtures
             JobName jobName =
                     new JobName("test_able_to_write_materials_with_unique_Metadata");
             JobTimestamp jobTimestamp = JobTimestamp.now();
+            URL url = new URL(SharedMethods.IMAGE_URL_PREFIX);
+            //
 
 ### Getting the Path of JobName, of JobTimestamp, of Material
 
 Each instance of **JobName**, **JobTimestamp** and **Material** have corresponding instance of `java.nio.file.Path`. You can retrieve the Path value by calling `store.getPath(…​)`. The following code shows how to.
 
-            //
-            Metadata metadata1 = Metadata.builder(url).put("step", "01").build();
             Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
                     metadata1, "Hello, Materialstore!");
             Metadata metadata2 = Metadata.builder(url).put("step", "02").build();
@@ -1567,6 +1567,8 @@ Each instance of **JobName**, **JobTimestamp** and **Material** have correspondi
             // create test fixtures
             JobName jobName =
                     new JobName("test_getPathOf");
+            JobTimestamp jobTimestamp = JobTimestamp.now();
+            URL url = new URL(SharedMethods.IMAGE_URL_PREFIX);
 
 ### Other methods implemented in the Store
 

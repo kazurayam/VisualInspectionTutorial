@@ -1,4 +1,4 @@
-This is an introduction to a Java library named `materialstore` that I (kazurayam) developed.
+This document describes two Java libraries: `materialstore` and `inspectus` that I developed.
 
 == Setting up a project
 
