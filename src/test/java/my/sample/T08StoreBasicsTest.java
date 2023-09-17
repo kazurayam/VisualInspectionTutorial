@@ -59,8 +59,7 @@ public class T08StoreBasicsTest {
 
     @Test
     public void test_write_a_Material_into_the_store() throws MaterialstoreException {
-        URL url = SharedMethods.createURL(
-                "https://kazurayam.github.io/VisualInspectionTutorial/images/tutorial/03_apple.png");
+        URL url = SharedMethods.createSampleImageURL("03_apple.png");
         // download the image into byte[]
         byte[] bytes = SharedMethods.downloadUrlToByteArray(url);
         // write the byte[] into the store
@@ -79,8 +78,7 @@ public class T08StoreBasicsTest {
 
     @Test
     public void test_read_bytes_from_Material() throws MaterialstoreException {
-        URL url = SharedMethods.createURL(
-                "https://kazurayam.github.io/VisualInspectionTutorial/images/tutorial/03_apple.png");
+        URL url = SharedMethods.createSampleImageURL("03_apple.png");
         byte[] bytes = SharedMethods.downloadUrlToByteArray(url);
         JobName jobName = new JobName("test_read_bytes_from_Material");
         JobTimestamp jobTimestamp = JobTimestamp.now();
@@ -256,7 +254,7 @@ public class T08StoreBasicsTest {
         // create test fixtures
         JobName jobName = new JobName("test_unable_to_write_material_with_duplicating_Metadata");
         JobTimestamp jobTimestamp = JobTimestamp.now();
-        URL url = new URL("https://github.com/kazurayam/VisualInspectionTutorial");
+        URL url = new URL(SharedMethods.IMAGE_URL_PREFIX);
         Metadata metadata = Metadata.builder(url).put("foo", "bar").build();
         Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
                 metadata, "Hello, Materialstore!");
@@ -281,7 +279,7 @@ public class T08StoreBasicsTest {
         JobName jobName =
                 new JobName("test_able_to_write_materials_with_unique_Metadata");
         JobTimestamp jobTimestamp = JobTimestamp.now();
-        URL url = new URL("https://github.com/kazurayam/VisualInspectionTutorial");
+        URL url = new URL(SharedMethods.IMAGE_URL_PREFIX);
         //
         Metadata metadata1 = Metadata.builder(url).put("step", "01").build();
         Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
@@ -318,7 +316,7 @@ public class T08StoreBasicsTest {
         JobName jobName =
                 new JobName("test_getPathOf");
         JobTimestamp jobTimestamp = JobTimestamp.now();
-        URL url = new URL("https://github.com/kazurayam/VisualInspectionTutorial");
+        URL url = new URL(SharedMethods.IMAGE_URL_PREFIX);
         Metadata metadata1 = Metadata.builder(url).put("step", "01").build();
         Material mt1 = store.write(jobName, jobTimestamp, FileType.TXT,
                 metadata1, "Hello, Materialstore!");

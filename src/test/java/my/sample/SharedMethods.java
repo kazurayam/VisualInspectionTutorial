@@ -18,12 +18,19 @@ import java.util.Map;
 
 public class SharedMethods {
 
+    public static final String IMAGE_URL_PREFIX =
+            "https://kazurayam.github.io/VisualInspectionTutorial/images/tutorial/";
+
     public static URL createURL(String urlString) throws MaterialstoreException {
         try {
             return new URL(urlString);
         } catch (MalformedURLException e) {
             throw new MaterialstoreException(e);
         }
+    }
+
+    public static URL createSampleImageURL(String imageFile) throws MaterialstoreException {
+        return createURL(IMAGE_URL_PREFIX + imageFile);
     }
 
     public static byte[] downloadUrlToByteArray(URL toDownload) {
@@ -46,10 +53,8 @@ public class SharedMethods {
 
     public static void write3images(Store store, JobName jn, JobTimestamp jt)          // (16)
             throws MaterialstoreException {
-        String prefix =
-                "https://kazurayam.github.io/VisualInspectionTutorial/images/tutorial/";
         // Apple
-        URL url1 = SharedMethods.createURL(prefix + "03_apple.png");
+        URL url1 = SharedMethods.createURL(IMAGE_URL_PREFIX + "03_apple.png");
         store.write(jn, jt, FileType.PNG,
                 Metadata.builder(url1)
                         .put("step", "01")
@@ -58,7 +63,7 @@ public class SharedMethods {
                 SharedMethods.downloadUrlToByteArray(url1));
 
         // Mikan
-        URL url2 = SharedMethods.createURL(prefix + "04_mikan.png");
+        URL url2 = SharedMethods.createURL(IMAGE_URL_PREFIX + "04_mikan.png");
         Map<String, String> m = new HashMap<>();
         m.put("step", "02");
         m.put("label", "mikan");
@@ -69,7 +74,7 @@ public class SharedMethods {
                 SharedMethods.downloadUrlToByteArray(url2));
 
         // Money
-        URL url3 = SharedMethods.createURL(prefix + "05_money.png");
+        URL url3 = SharedMethods.createURL(IMAGE_URL_PREFIX + "05_money.png");
         store.write(jn, jt, FileType.PNG,
                 Metadata.builder(url3)
                         .exclude("URL.protocol", "URL.port")

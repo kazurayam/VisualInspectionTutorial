@@ -31,8 +31,8 @@ public class T02WriteImageWithMetadataTest {
     public void test02_write_image_with_metadata() throws MaterialstoreException {
         JobName jobName = new JobName("test02_write_image_with_metadata");
         JobTimestamp jobTimestamp = JobTimestamp.now();
-        URL url = SharedMethods.createURL(                     // (10)
-                "https://kazurayam.github.io/VisualInspectionTutorial/images/tutorial/03_apple.png");
+        URL url = SharedMethods.createURL(
+                SharedMethods.IMAGE_URL_PREFIX + "03_apple.png");  // (10)
         byte[] bytes = SharedMethods.downloadUrlToByteArray(url);         // (11)
         Material material =
                 store.write(jobName, jobTimestamp,             // (12)
@@ -48,11 +48,11 @@ public class T02WriteImageWithMetadataTest {
                 + material.getDescription());                   // (14)
 
         assertEquals(FileType.PNG, material.getFileType());
-        assertEquals("https",
+        assertEquals(url.getProtocol(),
                 material.getMetadata().get("URL.protocol"));
-        assertEquals("kazurayam.github.io",
+        assertEquals(url.getHost(),
                 material.getMetadata().get("URL.host"));        // (15)
-        assertEquals("/VisualInspectionTutorial/images/tutorial/03_apple.png",
+        assertEquals(url.getPath(),
                 material.getMetadata().get("URL.path"));
         assertEquals("01", material.getMetadata().get("step"));
     }
