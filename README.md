@@ -1,17 +1,10 @@
 ## What is this project for
 
-This project presents a tutorial document about kazurayam's 2 artifacts:
+This project presents a tutorial document about kazurayam's 2 products:
 
-- materialstore
-- inspectus
+- [materialstore](https://github.com/kazurayam/materialstore)
+- [inspectus](https://github.com/kazurayam/inspectus)
 
-These 2 libraries are designed to implement what kazurayam call "Visual Inspection".
+These 2 libraries are designed to implement what kazurayam calls "Visual Inspection".
 
-## Dependencies
-
-- https://github.com/kazurayam/materialstore
-- https://github.com/kazurayam/inspectus
-
-## Link to the document
-
-See https://kazurayam.github.io/materialstore-tutorial/ for the document
+See https://kazurayam.github.io/VisualInspectionTutorial/ for the document
